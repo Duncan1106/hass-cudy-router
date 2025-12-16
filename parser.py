@@ -1,23 +1,22 @@
 """Helper methods to parse HTML returned by Cudy routers"""
 
 import re
+import logging
 from typing import Any
 from bs4 import BeautifulSoup
-from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
 from homeassistant.const import STATE_UNAVAILABLE
-
 from .const import SECTION_DETAILED
 
+_LOGGER = logging.getLogger(__name__)
 
 def parse_speed(input_string: str) -> float:
-    """Parses transfer speed string (e.g. '12.5 Kbps') to megabits per second"""
+    """Parses transfer speed string (universal)."""
     if not input_string:
         return 0.0
     
-    # Hledame cislo a jednotku pomoci Regexu (ignoruje ikony a mezery okolo)
-    # Hleda: cislo (vcetne desetinne tecky) + volitelne mezery + jednotku (kbps, mbps...)
+    # Hledame cislo a jednotku (ignoruje ikony a mezery okolo)
     match = re.search(r"(\d+(?:\.\d+)?)\s*([kKmMgG]?bps)", input_string, re.IGNORECASE)
     
     if match:
@@ -39,28 +38,30 @@ def parse_speed(input_string: str) -> float:
     return 0.0
 
 
-def get_all_devices(input_html: str) -> list[dict[str, Any]]:
-    """Parses an HTML table extracting key-value pairs."""
+def _parse_ac1200_style(soup: BeautifulSoup) -> list[dict]:
+    """Parser logic specific for Cudy AC1200 (table based with IDs)."""
     devices = []
-    soup = BeautifulSoup(input_html, "html.parser")
     
-    # Nahradime <br> za novy radek
+    # Nahradit BR za novy radek pro lepsi parsing textu
     for br in soup.find_all("br"):
         br.replace_with("\n")
 
     # Hledame radky tabulky
     rows = soup.find_all("tr", id=re.compile(r"^cbi-table-\d+"))
+    
+    if not rows:
+        return [] # Tento parser nenasel ocekavana data
 
     for row in rows:
         try:
             ip = "Unknown"
             mac = "Unknown"
+            hostname = "Unknown"
+            connection = "Unknown"
             up_speed_str = "0"
             down_speed_str = "0"
-            hostname = "Unknown"
             signal = "---"
             online = "---"
-            connection = "Unknown"
 
             # 1. IP a MAC
             ipmac_div = row.find("div", id=re.compile(r"-ipmac$"))
@@ -80,15 +81,13 @@ def get_all_devices(input_html: str) -> list[dict[str, Any]]:
                 if len(parts) > 0:
                     hostname = parts[0].strip()
 
-            # OPRAVA: Pokud je hostname "Unknown", pouzijeme IP adresu
+            # Pokud je hostname "Unknown", pouzijeme IP adresu
             if hostname.lower() == "unknown" and ip != "Unknown":
                 hostname = ip
 
-            # 3. Rychlost (hledame div koncici na -speed)
+            # 3. Rychlost
             speed_div = row.find("div", id=re.compile(r"-speed$"))
             if speed_div:
-                # Text vypada jako: "UP_ICON 10 Kbps \n DOWN_ICON 20 Kbps"
-                # get_text s mezerou oddeli ikony od textu
                 text = speed_div.get_text(strip=True, separator="\n")
                 parts = text.split("\n")
                 if len(parts) >= 2:
@@ -126,17 +125,48 @@ def get_all_devices(input_html: str) -> list[dict[str, Any]]:
                 )
         except Exception:
             continue
-
+            
     return devices
+
+
+def _parse_m3000_style(soup: BeautifulSoup) -> list[dict]:
+    """
+    PLACEHOLDER: Parser logic for Cudy M3000.
+    Zatim prazdne, protoze nevime format dat.
+    Az poridite M3000, doplnime sem kod.
+    """
+    return []
+
+
+def get_all_devices(input_html: str) -> list[dict[str, Any]]:
+    """Master parser function that tries different strategies."""
+    if not input_html:
+        return []
+        
+    soup = BeautifulSoup(input_html, "html.parser")
+    
+    # 1. Zkusime parser pro AC1200
+    devices = _parse_ac1200_style(soup)
+    if devices:
+        return devices
+        
+    # 2. Pokud AC1200 vratilo prazdno, zkusime M3000 (do budoucna)
+    devices = _parse_m3000_style(soup)
+    if devices:
+        return devices
+    
+    # 3. Zadny parser nefungoval
+    return []
 
 
 def parse_devices(input_html: str, device_list_str: str, previous_devices: dict[str, Any] = None) -> dict[str, Any]:
     """Parses devices page and tracks last_seen timestamps for each device."""
     
     devices = get_all_devices(input_html)
+    
     data = {"device_count": {"value": len(devices)}}
     
-    # Razeni podle casu online
+    # Helper pro razeni
     def time_to_minutes(time_str):
         if not time_str or time_str == "---":
             return 999999
@@ -152,7 +182,7 @@ def parse_devices(input_html: str, device_list_str: str, previous_devices: dict[
     
     devices.sort(key=lambda d: time_to_minutes(d.get("online", "---")))
     
-    # Formatovani seznamu pro atributy
+    # Formatovani seznamu pro atributy senzoru "connected_devices"
     all_devices_formatted = []
     for device in devices:
         device_info = {
@@ -176,6 +206,7 @@ def parse_devices(input_html: str, device_list_str: str, previous_devices: dict[
         }
     }
     
+    # Vypocty statistik (Top users, Total speed, Detailed tracking)
     if devices:
         # Top downloader
         top_download_device = max(devices, key=lambda item: item.get("down_speed", 0))
@@ -189,6 +220,7 @@ def parse_devices(input_html: str, device_list_str: str, previous_devices: dict[
         data["top_uploader_mac"] = {"value": top_upload_device.get("mac")}
         data["top_uploader_hostname"] = {"value": top_upload_device.get("hostname")}
 
+        # Detailed tracking (pro persistence offline zarizeni)
         data[SECTION_DETAILED] = {}
         device_list = [x.strip() for x in (device_list_str or "").split(",")]
         now_ts = datetime.now().timestamp()
