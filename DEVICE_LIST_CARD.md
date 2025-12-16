@@ -21,6 +21,25 @@ Each device in the list includes:
 - `online_time`: How long the device has been online
 - `connection`: Connection type (wired/wireless)
 
+## List Connected Devices
+
+```yaml
+type: markdown
+content: >
+  | Zařízení (IP) | MAC Adresa | Typ | Signál | Čas |
+
+  | :--- | :--- | :--- | :--- | :---  |
+
+  {% for device in state_attr('sensor.connected_devices', 'devices') -%}
+
+  | **{{ device.hostname }}** | {{ device.mac }} | {{ device.connection }} | {{
+  device.signal }} | {{ device.online_time }} |
+
+  {% endfor %}
+title: Seznam připojených zařízení Cudy
+
+```
+
 ## ⭐ Recommended: Clean List with Icons
 
 ```yaml
