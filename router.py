@@ -147,14 +147,19 @@ class CudyRouter:
 
         data: dict[str, Any] = {}
 
-        # data[MODULE_MODEM] = parse_modem_info(
-        #     f"{await hass.async_add_executor_job(self.get, 'admin/network/gcom/status')}{await hass.async_add_executor_job(self.get, 'admin/network/gcom/status?detail=1')}"
-        # )
+        # 1. Ziskame surova data do promenne
+        raw_response = await hass.async_add_executor_job(
+            self.get, "admin/network/devices/devlist?detail=1"
+        )
+        
+        # 2. Vypiseme surova data do logu (zde byla drive chyba odsazeni)
+        #_LOGGER.error(f"CUDY RAW DATA: {raw_response}")
+
         previous_devices = previous_data.get(MODULE_DEVICES) if previous_data else None
+        
+        # 3. Predame promennou do parseru
         data[MODULE_DEVICES] = parse_devices(
-            await hass.async_add_executor_job(
-                self.get, "admin/network/devices/devlist?detail=1"
-            ),
+            raw_response,
             options and options.get(OPTIONS_DEVICELIST),
             previous_devices,
         )
