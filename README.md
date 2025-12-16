@@ -1,43 +1,61 @@
-# Cudy router integration for Home Assistant
+# Cudy Router integration for Home Assistant
 
-This is an unofficial integration of Cudy routers for Home Assistant.
+This is a custom integration for Cudy routers, specifically adapted for the **Cudy AC1200 (WR1200)** model.
 
-Unofficial means that this is not supported by Cudy, file issues here, not for them.
-
-As the project is in a really early stage (and who knows if it will be ever more than that),
-breaking modifications, like configuration or entity ID changes may be introduced.
-Please keep that in mind when using it.
+It is based on the original integration for LT18/WR3600 but has been modified to parse the different HTML structure used by the AC1200 firmware.
 
 ## Features
 
-This integration logs in to the standard administration UI and
-scrapes the information from HTML pages.
-Although Cudy routers has a JSON RPC interface, it is not open for the public.
+This integration logs in to the router's web administration interface and scrapes status data.
 
-- Provides sensors about 4G/LTE connection (network, cell, signal)
-- Provides sensors about devices (count, top bandwidth users)
-- Detailed report about configured devices (IP, bandwidth usage)
+- **Connected Devices:** Tracks the number of connected clients.
+- **Device Tracker:** Creates `device_tracker` entities for connected devices (based on MAC address).
+- **Bandwidth Monitoring:**
+  - Real-time download/upload speed per device.
+  - Total router download/upload speed.
+  - Identifies top bandwidth users (Top Downloader/Uploader sensors).
+- **Connection Details:** attributes showing connection type (Wired, 2.4G WiFi, 5G WiFi) and signal strength (for wireless clients).
 
-## Installing
+*Note: As the AC1200 is a standard Wi-Fi router (not an LTE modem), cellular sensors (SIM, 4G Signal, Bands) are not available.*
 
-Create `cudy_router` folder in `config/custom_components` folder and copy repository
-content there. Alternatively it can be cloned in that folder.
+## Installation
 
-Note that the folder name is important to avoid import errors.
+1. Go to your Home Assistant `config/custom_components` directory.
+2. Create a folder named `cudy_router`.
+3. Copy all the files from this repository into that folder.
+   - The structure should look like:
+     ```
+     custom_components/
+       cudy_router/
+         __init__.py
+         config_flow.py
+         const.py
+         coordinator.py
+         device_tracker.py
+         manifest.json
+         parser.py
+         router.py
+         sensor.py
+         strings.json
+         translations/
+           en.json
+     ```
+4. Restart Home Assistant.
 
-## Contributing
+## Configuration
 
-It started as my personal project to satisfy my own requirements, therefore
-it is far from complete.
+1. Navigate to **Settings** -> **Devices & Services**.
+2. Click **Add Integration**.
+3. Search for **Cudy Router**.
+4. Enter the router's IP address (e.g., `192.168.10.1`), username (usually `admin`), and password.
+5. (Optional) In the configuration options, you can specify a list of MAC addresses to track specifically or adjust the update interval.
 
-It is only tested with my own LT18 router and with my Home Assistant installation.
-There's no guarantee that it's working on other systems. Feedback and pull requests are welcome.
+## Troubleshooting
 
-For major changes, please open an issue first to discuss what you
-would like to change.
+- **"Unknown" Device Names:** If the router doesn't provide a hostname, the integration falls back to displaying the IP address.
+- **Speed 0.00 Mbit/s:** This indicates the router is reporting zero traffic for that device at the moment of the scan. Try downloading a large file to test.
 
-The project uses the code style configuration from Home Assistant Core.
+## Credits
 
-## License
-
-[GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+Based on the work of [armendkadrija](https://github.com/armendkadrija/hass-cudy-router-wr3600) and other contributors.
+Modified for Cudy AC1200 HTML parsing compatibility.

@@ -50,21 +50,18 @@ class CudyRouterDeviceTracker(CoordinatorEntity, TrackerEntity):
     def is_connected(self) -> bool:
         """Return true if the device is connected: Wired or has a valid signal."""
         devices = self.coordinator.data.get(MODULE_DEVICES, [])
-        _LOGGER.warning("[CudyRouterDeviceTracker] Devices in coordinator: %s", devices)
-        _LOGGER.warning("[CudyRouterDeviceTracker] Looking for MAC: %s", self._mac)
+        # Odstraneno nadmerne logovani pro produkcni pouziti, pokud chcete debugovat, odkomentujte
+        # _LOGGER.warning("[CudyRouterDeviceTracker] Devices in coordinator: %s", devices)
         for dev in devices:
-            _LOGGER.warning("[CudyRouterDeviceTracker] Checking device: %s", dev)
             if isinstance(dev, dict) and dev.get("mac") and dev["mac"].lower() == self._mac.lower():
                 connection = dev.get("connection", "").lower()
                 signal = dev.get("signal")
-                _LOGGER.warning("[CudyRouterDeviceTracker] Found device with MAC %s: connection=%s, signal=%s", self._mac, connection, signal)
                 # Connected if Wired, or signal is present and not empty or '---'
                 if connection == "wired":
                     return True
                 if signal and str(signal).strip() != "" and str(signal).strip() != "---":
                     return True
                 return False
-        _LOGGER.warning("[CudyRouterDeviceTracker] Device with MAC %s not found in devices list", self._mac)
         return False
 
     @property
@@ -78,5 +75,4 @@ class CudyRouterDeviceTracker(CoordinatorEntity, TrackerEntity):
 
     async def async_update(self) -> None:
         """Force update of the entity state and log call."""
-        _LOGGER.warning("[CudyRouterDeviceTracker] async_update called for MAC: %s", self._mac)
         self.async_write_ha_state()
