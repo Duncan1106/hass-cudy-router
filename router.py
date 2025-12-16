@@ -152,8 +152,8 @@ class CudyRouter:
             self.get, "admin/network/devices/devlist?detail=1"
         )
         
-        # 2. Vypiseme surova data do logu (zde byla drive chyba odsazeni)
-        #_LOGGER.error(f"CUDY RAW DATA: {raw_response}")
+        # 2. Logovani zakomentovano pro bezny provoz
+        # _LOGGER.error(f"CUDY RAW DATA: {raw_response}")
 
         previous_devices = previous_data.get(MODULE_DEVICES) if previous_data else None
         

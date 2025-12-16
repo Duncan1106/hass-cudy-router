@@ -288,6 +288,10 @@ async def async_setup_entry(
 
     for module, sensors in coordinator.data.items():
         for sensor_label in sensors:
+            # OPRAVA: Preskocime connected_devices, protoze ho pridavame rucne nize
+            if sensor_label == "connected_devices":
+                continue
+
             sensor_description = SENSOR_TYPES.get((module, sensor_label))
             if sensor_description:
                 entities.append(
