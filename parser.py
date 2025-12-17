@@ -83,34 +83,47 @@ def parse_system_info(input_html: str) -> dict[str, Any]:
     return data
 
 def parse_bandwidth_json(json_data: list) -> dict[str, Any]:
-    """Calculates current speed AND total bytes from history JSON."""
+    """
+    Automaticky detekuje, zda router posílá Bajty (AC1200) nebo Kilobity/Packety (AX3000).
+    """
     if not json_data or len(json_data) < 2:
-        return {
-            "upload_mbps": 0.0, "download_mbps": 0.0,
-            "upload_total_gb": 0.0, "download_total_gb": 0.0
-        }
-
+        return {"upload_mbps": 0.0, "download_mbps": 0.0, "upload_total_gb": 0.0, "download_total_gb": 0.0}
+    
     try:
-        last = json_data[-1]
-        prev = json_data[-2]
-        time_delta = last[0] - prev[0]
-        if time_delta > 0:
-            rx_rate = (last[1] - prev[1]) * 1_000_000 / time_delta
-            tx_rate = (last[3] - prev[3]) * 1_000_000 / time_delta
-            rx_mbps = round((rx_rate * 8) / 1_000_000, 2)
-            tx_mbps = round((tx_rate * 8) / 1_000_000, 2)
-        else:
-            rx_mbps = tx_mbps = 0.0
+        last, prev = json_data[-1], json_data[-2]
+        
+        # Časová delta v sekundách (z mikrosekund)
+        delta_t = (last[0] - prev[0]) / 1000000.0
+        if delta_t <= 0: delta_t = 1.0
+
+        # Indexy 3 (RX) a 4 (TX)
+        raw_rx_diff = last[3] - prev[3]
+        raw_tx_diff = last[4] - prev[4]
+
+        # DETEKCE MĚŘÍTKA:
+        # Pokud je nárůst při stahování podezřele malý (pod 100k za sekundu), 
+        # předpokládáme, že AX3000 posílá už kbit/s nebo packety a ne bajty.
+        if (raw_rx_diff / delta_t) < 100000:
+            # Režim AX3000: Hodnoty v JSONu jsou pravděpodobně už v kbit
+            rx_mbps = round((raw_rx_diff / delta_t) / 128.0, 2) # kbit -> mbit (přibližně)
+            tx_mbps = round((raw_tx_diff / delta_t) / 128.0, 2)
             
-        total_rx_gb = round(last[1] / 1024 / 1024 / 1024, 2)
-        total_tx_gb = round(last[3] / 1024 / 1024 / 1024, 2)
+            # Pokud i tak vychází 0.02 při 200mbit, zkusíme agresivní násobení 1000x
+            if rx_mbps < 1.0 and raw_rx_diff > 0:
+                rx_mbps = round((raw_rx_diff / delta_t) / 0.128, 2)
+                tx_mbps = round((raw_tx_diff / delta_t) / 0.128, 2)
+        else:
+            # Režim AC1200: Standardní bajty
+            rx_mbps = round((raw_rx_diff * 8) / (delta_t * 1000000.0), 2)
+            tx_mbps = round((raw_tx_diff * 8) / (delta_t * 1000000.0), 2)
 
         return {
-            "download_mbps": rx_mbps, "upload_mbps": tx_mbps,
-            "download_total_gb": total_rx_gb, "upload_total_gb": total_tx_gb
+            "download_mbps": max(0.0, rx_mbps),
+            "upload_mbps": max(0.0, tx_mbps),
+            "download_total_gb": round(last[3] / (1024**3), 2) if raw_rx_diff > 100000 else round(last[3]/1000, 2),
+            "upload_total_gb": round(last[4] / (1024**3), 2) if raw_rx_diff > 100000 else round(last[4]/1000, 2)
         }
-    except Exception as e:
-        _LOGGER.error("Error parsing bandwidth JSON: %s", e)
+    except:
         return {"upload_mbps": 0.0, "download_mbps": 0.0, "upload_total_gb": 0.0, "download_total_gb": 0.0}
 
 def _parse_ac1200_style(soup: BeautifulSoup) -> list[dict]:
