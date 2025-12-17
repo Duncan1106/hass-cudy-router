@@ -15,8 +15,6 @@ from .parser import parse_devices, parse_lan_info, parse_bandwidth_json, parse_s
 _LOGGER = logging.getLogger(__name__)
 
 class CudyRouter:
-    """Represents a router and provides functions for communication."""
-
     def __init__(self, hass, host, username, password):
         self.host = host
         self.username = username
@@ -91,16 +89,15 @@ class CudyRouter:
     async def get_data(self, hass, options: dict[str, Any], previous_data: dict[str, Any] = None) -> dict[str, Any]:
         data = {}
 
-        raw_system = await hass.async_add_executor_job(self.get, "admin/system/system")
-        data[MODULE_SYSTEM] = parse_system_info(raw_system)
+        raw_system_page = await hass.async_add_executor_job(self.get, "admin/system/system")
+        data[MODULE_SYSTEM] = parse_system_info(raw_system_page)
         hw_version = data[MODULE_SYSTEM].get("hardware", "")
-
+        raw_status = await hass.async_add_executor_job(self.get, "admin/system/status")
+        raw_lan_status = await hass.async_add_executor_job(self.get, "admin/network/lan/status")
+        combined_html = (raw_status or "") + (raw_lan_status or "")
+        data[MODULE_LAN] = parse_lan_info(combined_html)
         raw_dev = await hass.async_add_executor_job(self.get, "admin/network/devices/devlist?detail=1")
-        prev_dev = previous_data.get(MODULE_DEVICES) if previous_data else None
-        data[MODULE_DEVICES] = parse_devices(raw_dev, options.get(OPTIONS_DEVICELIST) if options else None, prev_dev)
-
-        raw_lan = await hass.async_add_executor_job(self.get, "admin/network/lan/status?detail=1")
-        data[MODULE_LAN] = parse_lan_info(raw_lan)
+        data[MODULE_DEVICES] = parse_devices(raw_dev, self.host)
 
         try:
              raw_bw = await hass.async_add_executor_job(self.get, "admin/status/bandwidth?iface=eth0")
@@ -108,8 +105,7 @@ class CudyRouter:
                  data[MODULE_BANDWIDTH] = parse_bandwidth_json(json.loads(raw_bw), hw_version)
              else:
                  data[MODULE_BANDWIDTH] = {}
-        except Exception as e:
-             _LOGGER.error("Failed to fetch bandwidth: %s", e)
+        except:
              data[MODULE_BANDWIDTH] = {}
 
         return data
