@@ -19,6 +19,11 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import *
 from .coordinator import CudyRouterDataUpdateCoordinator
 
+def _value_or_dict_value(v: Any) -> Any:
+    if isinstance(v, dict):
+        return v.get("value")
+    return v
+
 
 @dataclass(frozen=True, kw_only=True)
 class CudySensorEntityDescription(SensorEntityDescription):
@@ -68,7 +73,7 @@ SENSOR_TYPES: tuple[CudySensorEntityDescription, ...] = (
         icon="mdi:devices",
         state_class=SensorStateClass.MEASUREMENT,
         module=MODULE_SYSTEM,
-        value_fn=lambda data: (data.get(SENSOR_MESH_UNITS) or {}).get("value"),
+        value_fn=lambda data: _value_or_dict_value(data.get(SENSOR_MESH_UNITS)),
     ),
     # ----- WAN -----
     CudySensorEntityDescription(
@@ -127,7 +132,7 @@ SENSOR_TYPES: tuple[CudySensorEntityDescription, ...] = (
         icon="mdi:devices",
         state_class=SensorStateClass.MEASUREMENT,
         module=MODULE_DEVICES,
-        value_fn=lambda data: (data.get(SENSOR_DEVICE_COUNT) or {}).get("value"),
+        value_fn=lambda data: _value_or_dict_value(data.get(SENSOR_DEVICE_COUNT)),
     ),
     CudySensorEntityDescription(
         key=SENSOR_WIFI_24_DEVICE_COUNT,
@@ -135,7 +140,7 @@ SENSOR_TYPES: tuple[CudySensorEntityDescription, ...] = (
         icon="mdi:wifi",
         state_class=SensorStateClass.MEASUREMENT,
         module=MODULE_DEVICES,
-        value_fn=lambda data: (data.get(SENSOR_WIFI_24_DEVICE_COUNT) or {}).get("value"),
+        value_fn=lambda data: _value_or_dict_value(data.get(SENSOR_WIFI_24_DEVICE_COUNT)),
     ),
     CudySensorEntityDescription(
         key=SENSOR_WIFI_5_DEVICE_COUNT,
@@ -143,7 +148,7 @@ SENSOR_TYPES: tuple[CudySensorEntityDescription, ...] = (
         icon="mdi:wifi",
         state_class=SensorStateClass.MEASUREMENT,
         module=MODULE_DEVICES,
-        value_fn=lambda data: (data.get(SENSOR_WIFI_5_DEVICE_COUNT) or {}).get("value"),
+        value_fn=lambda data: _value_or_dict_value(data.get(SENSOR_WIFI_5_DEVICE_COUNT)),
     ),
     CudySensorEntityDescription(
         key=SENSOR_WIRED_DEVICE_COUNT,
@@ -151,7 +156,7 @@ SENSOR_TYPES: tuple[CudySensorEntityDescription, ...] = (
         icon="mdi:lan",
         state_class=SensorStateClass.MEASUREMENT,
         module=MODULE_DEVICES,
-        value_fn=lambda data: (data.get(SENSOR_WIRED_DEVICE_COUNT) or {}).get("value"),
+        value_fn=lambda data: _value_or_dict_value(data.get(SENSOR_WIRED_DEVICE_COUNT)),
     ),
     CudySensorEntityDescription(
         key=SENSOR_MESH_DEVICE_COUNT,
@@ -159,7 +164,7 @@ SENSOR_TYPES: tuple[CudySensorEntityDescription, ...] = (
         icon="mdi:router-network",
         state_class=SensorStateClass.MEASUREMENT,
         module=MODULE_DEVICES,
-        value_fn=lambda data: (data.get(SENSOR_MESH_DEVICE_COUNT) or {}).get("value"),
+        value_fn=lambda data: _value_or_dict_value(data.get(SENSOR_MESH_DEVICE_COUNT)),
     ),
 )
 
