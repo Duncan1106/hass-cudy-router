@@ -13,6 +13,7 @@ SECTION_DETAILED = "detailed"
 OPTIONS_DEVICELIST = "device_list"
 
 SENSOR_FIRMWARE_VERSION = "firmware_version"
+SENSOR_HARDWARE = "hardware"
 SENSOR_SYSTEM_UPTIME = "system_uptime"
 SENSOR_MESH_NETWORK = "mesh_network"
 SENSOR_MESH_UNITS = "mesh_units"

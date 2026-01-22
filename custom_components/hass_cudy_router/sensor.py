@@ -6,13 +6,12 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory, UnitOfDataRate
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -21,11 +20,8 @@ from .const import *
 from .coordinator import CudyRouterDataUpdateCoordinator
 
 
-# Home Assistant pattern: extend SensorEntityDescription to add integration-specific fields.
-# Use kw_only=True so our extra fields must be passed as keywords.
 @dataclass(frozen=True, kw_only=True)
 class CudySensorEntityDescription(SensorEntityDescription):
-    """Describes a Cudy Router sensor."""
 
     module: str
     value_fn: Callable[[dict[str, Any]], Any]
@@ -40,6 +36,14 @@ SENSOR_TYPES: tuple[CudySensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         module=MODULE_SYSTEM,
         value_fn=lambda data: data.get(SENSOR_FIRMWARE_VERSION),
+    ),
+    CudySensorEntityDescription(
+        key=SENSOR_HARDWARE,
+        name="Hardware",
+        icon="mdi:chip",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        module=MODULE_SYSTEM,
+        value_fn=lambda data: data.get(SENSOR_HARDWARE),
     ),
     CudySensorEntityDescription(
         key=SENSOR_SYSTEM_UPTIME,

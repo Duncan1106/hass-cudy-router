@@ -29,6 +29,9 @@
       "firmware_version": {
         "name": "Firmware version"
       },
+      "hardware": {
+        "name": "Hardware"
+      },
       "system_uptime": {
         "name": "Connected time"
       },

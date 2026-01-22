@@ -24,7 +24,7 @@ def _get_clean_text(element) -> str:
     return text
 
 def parse_system_info(input_html: str) -> dict[str, Any]:
-    data = {"firmware": "Unknown", "hardware": "Unknown"}
+    data = {SENSOR_FIRMWARE_VERSION: "Unknown", SENSOR_HARDWARE: "Unknown", SENSOR_SYSTEM_UPTIME: "Unknown"}
     if not input_html: return data
 
     soup = BeautifulSoup(input_html, "html.parser")
@@ -33,15 +33,15 @@ def parse_system_info(input_html: str) -> dict[str, Any]:
     unique_lines = list(dict.fromkeys(lines))
     hw_match = _get_info(unique_lines, "Hardware")
     if hw_match:
-        data["hardware"] = hw_match
+        data[SENSOR_HARDWARE] = hw_match
 
     fw_match = re.search(r"Firmware Version\s*([^\s|]+)", text)
     if fw_match:
-        data["firmware"] = fw_match.group(1).strip()
+        data[SENSOR_FIRMWARE_VERSION] = fw_match.group(1).strip()
 
     ut_match = _get_info(unique_lines, "Uptime")
     if ut_match:
-        data["uptime"] = ut_match
+        data[SENSOR_SYSTEM_UPTIME] = ut_match
 
     return data
 

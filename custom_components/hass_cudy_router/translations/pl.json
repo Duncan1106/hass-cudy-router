@@ -29,6 +29,9 @@
       "firmware_version": {
         "name": "Wersja oprogramowania"
       },
+      "hardware": {
+        "name": "Hardware"
+      },
       "system_uptime": {
         "name": "Czas działania"
       },

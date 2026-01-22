@@ -14,7 +14,7 @@ from custom_components.hass_cudy_router.const import (
     DOMAIN,
     MODULE_DEVICES,
     MODULE_SYSTEM,
-    MODULE_WAN,
+    MODULE_WAN, SENSOR_FIRMWARE_VERSION, SENSOR_SYSTEM_UPTIME, SENSOR_WAN_IP,
 )
 from custom_components.hass_cudy_router.coordinator import CudyRouterDataUpdateCoordinator
 from custom_components.hass_cudy_router.sensor import (
@@ -75,8 +75,8 @@ async def test_generic_sensor_native_value(hass: HomeAssistant, coordinator):
 
     coordinator.data = {
         MODULE_SYSTEM: {
-            "firmware": "1.2.3",
-            "uptime": "00:01:00",
+            SENSOR_FIRMWARE_VERSION: "1.2.3",
+            SENSOR_SYSTEM_UPTIME: "00:01:00",
         }
     }
 
@@ -92,7 +92,7 @@ async def test_generic_sensor_handles_missing_module_data(hass: HomeAssistant, c
     entity = CudyGenericSensor(coordinator, desc)
 
     # No MODULE_SYSTEM present
-    coordinator.data = {MODULE_WAN: {"wan_ip": "1.2.3.4"}}
+    coordinator.data = {MODULE_WAN: {SENSOR_WAN_IP: "1.2.3.4"}}
     assert entity.native_value is None
 
     # MODULE_SYSTEM present, but not a dict
@@ -103,7 +103,7 @@ async def test_generic_sensor_handles_missing_module_data(hass: HomeAssistant, c
 @pytest.mark.asyncio
 async def test_generic_sensor_unique_id_and_device_info(hass: HomeAssistant, coordinator):
     """Ensure unique_id and device_info are stable and correct."""
-    desc = _get_description("firmware_version")
+    desc = _get_description(SENSOR_FIRMWARE_VERSION)
     entity = CudyGenericSensor(coordinator, desc)
 
     assert entity.unique_id == f"cudy_{coordinator.host}_{desc.key}"
