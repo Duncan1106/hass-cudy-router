@@ -1,24 +1,24 @@
 from __future__ import annotations
 
-import logging
-import re
-from typing import Any, Optional
+from typing import Any
 
 from custom_components.hass_cudy_router.const import SENSOR_SYSTEM_MODEL
-from custom_components.hass_cudy_router.models.base_api import BaseApi
-
-_LOGGER = logging.getLogger(__name__)
-
-KNOWN_MODELS = {
-    r"WR6500": "WR6500",
-    r"R700": "R700",
-    r"P5": "P5",
-    r"Generic": "Generic",
-}
-
+from custom_components.hass_cudy_router.models import SPEC_REGISTRY
+from custom_components.hass_cudy_router.parser import parse_system_info
 
 async def detect_model(client: Any) -> str:
-    api = BaseApi(client)
-    system_raw = await api.fetch_text("/admin/system/status?detail=1")
-    system_data = api.parse_system_info(system_raw)
-    return system_data[SENSOR_SYSTEM_MODEL] if system_data[SENSOR_SYSTEM_MODEL] in KNOWN_MODELS.values() else "Generic"
+    path = "/cgi-bin/luci/admin/system/status?detail=1"
+    try:
+        html = await client.get(path)
+        if html:
+            data = parse_system_info(html)
+            if SENSOR_SYSTEM_MODEL in data.keys():
+                potential_model = data[SENSOR_SYSTEM_MODEL]
+                if potential_model in SPEC_REGISTRY.keys():
+                    return potential_model
+            return "Generic"
+    except Exception:
+        html = None
+    if not html:
+        return "Generic"
+    return "Generic"

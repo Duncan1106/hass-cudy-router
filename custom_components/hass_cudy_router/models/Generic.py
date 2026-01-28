@@ -1,66 +1,53 @@
-from __future__ import annotations
-
 from typing import Final
 
 from homeassistant.components.sensor import SensorEntityDescription, SensorStateClass
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from custom_components.hass_cudy_router.const import *
+from . import ModelSpec, build_module_map, register_spec
+from ..parser import *
 
-from .coordinator import GenericCoordinator
-from ..base_sensor import async_setup_model_sensors
-
-GENERIC_MODULE_MAP: Final = {
-    "system_": MODULE_SYSTEM,
-    "lan_": MODULE_LAN,
-    "dhcp_": MODULE_DHCP,
-    "device_": MODULE_DEVICES,
-}
-
-SENSOR_DESCRIPTIONS: Final = (
+SENSOR_DESCRIPTIONS_GENERIC: Final = (
     # ----- SYSTEM -----
     SensorEntityDescription(
         key=SENSOR_SYSTEM_FIRMWARE_VERSION,
-        name="Firmware Version",
+        translation_key=SENSOR_SYSTEM_FIRMWARE_VERSION,
         icon=ICON_SYSTEM_FIRMWARE_VERSION,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_SYSTEM_HARDWARE,
-        name="Hardware",
+        translation_key=SENSOR_SYSTEM_HARDWARE,
         icon=ICON_SYSTEM_HARDWARE,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_SYSTEM_UPTIME,
-        name="Connected Time",
+        translation_key=SENSOR_SYSTEM_UPTIME,
         icon=ICON_SYSTEM_UPTIME,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_SYSTEM_LOCALTIME,
-        name="Local Time",
+        translation_key=SENSOR_SYSTEM_LOCALTIME,
         icon=ICON_SYSTEM_LOCALTIME,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # ----- LAN -----
     SensorEntityDescription(
         key=SENSOR_LAN_IP,
-        name="LAN IP Address",
+        translation_key=SENSOR_LAN_IP,
         icon=ICON_LAN_IP,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_LAN_SUBNET,
-        name="Subnet Mask",
+        translation_key=SENSOR_LAN_SUBNET,
         icon=ICON_LAN_SUBNET,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_LAN_MAC,
+        translation_key=SENSOR_LAN_MAC,
         name="MAC-Address",
         icon=ICON_LAN_MAC,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -68,59 +55,66 @@ SENSOR_DESCRIPTIONS: Final = (
     # ----- DHCP -----
     SensorEntityDescription(
         key=SENSOR_DHCP_IP_START,
-        name="IP Start",
+        translation_key=SENSOR_DHCP_IP_START,
         icon=ICON_DHCP_IP_START,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_IP_END,
-        name="IP End",
+        translation_key=SENSOR_DHCP_IP_END,
         icon=ICON_DHCP_IP_END,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_DNS_PRIMARY,
-        name="Preferred DNS",
+        translation_key=SENSOR_DHCP_DNS_PRIMARY,
         icon=ICON_DHCP_DNS_PRIMARY,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_DNS_SECONDARY,
-        name="Alternate DNS",
+        translation_key=SENSOR_DHCP_DNS_SECONDARY,
         icon=ICON_DHCP_DNS_SECONDARY,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_GATEWAY,
-        name="Default Gateway",
+        translation_key=SENSOR_DHCP_GATEWAY,
         icon=ICON_DHCP_GATEWAY,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_LEASE_TIME,
-        name="Leasetime",
+        translation_key=SENSOR_DHCP_LEASE_TIME,
         icon=ICON_DHCP_LEASE_TIME,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # ----- DEVICES COUNTS -----
     SensorEntityDescription(
         key=SENSOR_DEVICE_COUNT,
-        name="Total Devices Connected",
+        translation_key=SENSOR_DEVICE_COUNT,
         icon=ICON_DEVICE_COUNT,
         state_class=SensorStateClass.MEASUREMENT,
     ),
 )
 
-async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
-) -> None:
-    await async_setup_model_sensors(
-        hass,
-        entry,
-        async_add_entities,
-        SENSOR_DESCRIPTIONS,
-        module_map=GENERIC_MODULE_MAP,
-        coordinator_cls=GenericCoordinator,
-    )
+GENERIC_SPEC = ModelSpec(
+    model="Generic",
+    pages={
+        MODULE_SYSTEM: "/admin/system/status?detail=1",
+        MODULE_LAN: "/admin/network/lan/status?detail=1",
+        MODULE_DEVICES: "/admin/network/devices/status?detail=1",
+    },
+    parsers={
+        MODULE_SYSTEM: parse_system_info,
+        MODULE_LAN: parse_lan_info,
+        MODULE_DEVICES: parse_simple_devices,
+    },
+    device_list_page="/admin/network/devices/devlist?detail=1",
+    device_list_parser=parse_device_list,
+    platforms={"sensor", "device_tracker"},
+    supports_reboot=False,
+    module_map=build_module_map(),
+    sensor_descriptions=SENSOR_DESCRIPTIONS_GENERIC,
+)
+register_spec(GENERIC_SPEC)

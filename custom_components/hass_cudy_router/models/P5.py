@@ -1,84 +1,60 @@
-from __future__ import annotations
-
 from typing import Final
 
-from homeassistant.components.sensor import (
-    SensorEntityDescription,
-    SensorStateClass,
-)
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.components.sensor import SensorEntityDescription, SensorStateClass
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from custom_components.hass_cudy_router.const import *
+from . import ModelSpec, build_module_map, register_spec
+from ..parser import *
 
-from .coordinator import P5Coordinator
-from ..base_sensor import async_setup_model_sensors
-from ...const import SENSOR_GSM_CONNECTED_TIME
-
-P5_MODULE_MAP: Final = {
-    "info_": MODULE_INFO,
-    "system_": MODULE_SYSTEM,
-    "mesh_": MODULE_DEVICES,
-    "lan_": MODULE_LAN,
-    "24g_": MODULE_WIRELESS_24G,
-    "5g_": MODULE_WIRELESS_5G,
-    "dhcp_": MODULE_DHCP,
-    "gsm_": MODULE_GSM,
-    "sms_": MODULE_SMS,
-    "device_": MODULE_DEVICES,
-}
-
-SENSOR_DESCRIPTIONS: Final = (
+SENSOR_DESCRIPTIONS_P5: Final = (
     # ----- INFO -----
     SensorEntityDescription(
         key=SENSOR_INFO_WORK_MODE,
-        name="Work Mode",
+        translation_key=SENSOR_INFO_WORK_MODE,
         icon=ICON_INFO_WORK_MODE,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_INFO_INTERFACE,
-        name="Interface",
+        translation_key=SENSOR_INFO_INTERFACE,
         icon=ICON_INFO_INTERFACE,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # ----- SYSTEM -----
     SensorEntityDescription(
         key=SENSOR_SYSTEM_FIRMWARE_VERSION,
-        name="Firmware Version",
+        translation_key=SENSOR_SYSTEM_FIRMWARE_VERSION,
         icon=ICON_SYSTEM_FIRMWARE_VERSION,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_SYSTEM_HARDWARE,
-        name="Hardware",
+        translation_key=SENSOR_SYSTEM_HARDWARE,
         icon=ICON_SYSTEM_HARDWARE,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_SYSTEM_UPTIME,
-        name="Connected Time",
+        translation_key=SENSOR_SYSTEM_UPTIME,
         icon=ICON_SYSTEM_UPTIME,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_SYSTEM_LOCALTIME,
-        name="Local Time",
+        translation_key=SENSOR_SYSTEM_LOCALTIME,
         icon=ICON_SYSTEM_LOCALTIME,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # ----- MESH -----
     SensorEntityDescription(
         key=SENSOR_MESH_NETWORK,
-        name="Mesh Network",
+        translation_key=SENSOR_MESH_NETWORK,
         icon=ICON_MESH_NETWORK,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_MESH_UNITS,
-        name="Mesh Units",
+        translation_key=SENSOR_MESH_UNITS,
         icon=ICON_MESH_UNITS,
         state_class=SensorStateClass.MEASUREMENT,
     ),
@@ -86,18 +62,19 @@ SENSOR_DESCRIPTIONS: Final = (
     # ----- LAN -----
     SensorEntityDescription(
         key=SENSOR_LAN_IP,
-        name="LAN IP Address",
+        translation_key=SENSOR_LAN_IP,
         icon=ICON_LAN_IP,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_LAN_SUBNET,
-        name="Subnet Mask",
+        translation_key=SENSOR_LAN_SUBNET,
         icon=ICON_LAN_SUBNET,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_LAN_MAC,
+        translation_key=SENSOR_LAN_MAC,
         name="MAC-Address",
         icon=ICON_LAN_MAC,
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -105,184 +82,204 @@ SENSOR_DESCRIPTIONS: Final = (
     # ----- WIFI 2.4G -----
     SensorEntityDescription(
         key=SENSOR_24G_WIFI_SSID,
-        name="SSID",
+        translation_key=SENSOR_24G_WIFI_SSID,
         icon=ICON_24G_WIFI_SSID,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_24G_WIFI_BSSID,
-        name="BSSID",
+        translation_key=SENSOR_24G_WIFI_BSSID,
         icon=ICON_24G_WIFI_BSSID,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_24G_WIFI_ENCRYPTION,
-        name="Encryption",
+        translation_key=SENSOR_24G_WIFI_ENCRYPTION,
         icon=ICON_24G_WIFI_ENCRYPTION,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_24G_WIFI_CHANNEL,
-        name="Channel",
+        translation_key=SENSOR_24G_WIFI_CHANNEL,
         icon=ICON_24G_WIFI_CHANNEL,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     # ----- WIFI 5G -----
     SensorEntityDescription(
         key=SENSOR_5G_WIFI_SSID,
-        name="SSID",
+        translation_key=SENSOR_5G_WIFI_SSID,
         icon=ICON_5G_WIFI_SSID,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_5G_WIFI_BSSID,
-        name="BSSID",
+        translation_key=SENSOR_5G_WIFI_BSSID,
         icon=ICON_5G_WIFI_BSSID,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_5G_WIFI_ENCRYPTION,
-        name="Encryption",
+        translation_key=SENSOR_5G_WIFI_ENCRYPTION,
         icon=ICON_5G_WIFI_ENCRYPTION,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_5G_WIFI_CHANNEL,
-        name="Channel",
+        translation_key=SENSOR_5G_WIFI_CHANNEL,
         icon=ICON_5G_WIFI_CHANNEL,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     # ----- DHCP -----
     SensorEntityDescription(
         key=SENSOR_DHCP_IP_START,
-        name="IP Start",
+        translation_key=SENSOR_DHCP_IP_START,
         icon=ICON_DHCP_IP_START,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_IP_END,
-        name="IP End",
+        translation_key=SENSOR_DHCP_IP_END,
         icon=ICON_DHCP_IP_END,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_DNS_PRIMARY,
-        name="Preferred DNS",
+        translation_key=SENSOR_DHCP_DNS_PRIMARY,
         icon=ICON_DHCP_DNS_PRIMARY,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_DNS_SECONDARY,
-        name="Alternate DNS",
+        translation_key=SENSOR_DHCP_DNS_SECONDARY,
         icon=ICON_DHCP_DNS_SECONDARY,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_GATEWAY,
-        name="Default Gateway",
+        translation_key=SENSOR_DHCP_GATEWAY,
         icon=ICON_DHCP_GATEWAY,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_DHCP_LEASE_TIME,
-        name="Leasetime",
+        translation_key=SENSOR_DHCP_LEASE_TIME,
         icon=ICON_DHCP_LEASE_TIME,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # ----- GSM -----
     SensorEntityDescription(
         key=SENSOR_GSM_NETWORK_TYPE,
-        name="Network Type",
+        translation_key=SENSOR_GSM_NETWORK_TYPE,
         icon=ICON_GSM_NETWORK_TYPE,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_GSM_DOWNLOAD,
-        name="Download",
+        translation_key=SENSOR_GSM_DOWNLOAD,
         icon=ICON_GSM_DOWNLOAD,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_GSM_UPLOAD,
-        name="Upload",
+        translation_key=SENSOR_GSM_UPLOAD,
         icon=ICON_GSM_UPLOAD,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_GSM_PUBLIC_IP,
-        name="Public IP",
+        translation_key=SENSOR_GSM_PUBLIC_IP,
         icon=ICON_GSM_PUBLIC_IP,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_GSM_IP_ADDRESS,
-        name="IP Address",
+        translation_key=SENSOR_GSM_IP_ADDRESS,
         icon=ICON_GSM_IP_ADDRESS,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key=SENSOR_GSM_CONNECTED_TIME,
-        name="Connected Time",
+        translation_key=SENSOR_GSM_CONNECTED_TIME,
         icon=ICON_GSM_CONNECTED_TIME,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # ----- SMS -----
     SensorEntityDescription(
         key=SENSOR_SMS_INBOX,
-        name="Inbox",
+        translation_key=SENSOR_SMS_INBOX,
         icon=ICON_SMS_INBOX,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=SENSOR_SMS_OUTBOX,
-        name="Outbox",
+        translation_key=SENSOR_SMS_OUTBOX,
         icon=ICON_SMS_OUTBOX,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     # ----- DEVICES COUNTS -----
     SensorEntityDescription(
         key=SENSOR_DEVICE_COUNT,
-        name="Total Devices Connected",
+        translation_key=SENSOR_DEVICE_COUNT,
         icon=ICON_DEVICE_COUNT,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=SENSOR_WIFI_24_DEVICE_COUNT,
-        name="2.4GHz WiFi Devices Connected",
+        translation_key=SENSOR_WIFI_24_DEVICE_COUNT,
         icon=ICON_WIFI_24_DEVICE_COUNT,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=SENSOR_WIFI_5_DEVICE_COUNT,
-        name="5GHz WiFi Devices Connected",
+        translation_key=SENSOR_WIFI_5_DEVICE_COUNT,
         icon=ICON_WIFI_5_DEVICE_COUNT,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=SENSOR_WIRED_DEVICE_COUNT,
-        name="Wired Devices Connected",
+        translation_key=SENSOR_WIRED_DEVICE_COUNT,
         icon=ICON_WIRED_DEVICE_COUNT,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=SENSOR_MESH_DEVICE_COUNT,
-        name="Mesh Devices Connected",
+        translation_key=SENSOR_MESH_DEVICE_COUNT,
         icon=ICON_MESH_DEVICE_COUNT,
         state_class=SensorStateClass.MEASUREMENT,
     ),
 )
 
-
-async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
-) -> None:
-    await async_setup_model_sensors(
-        hass,
-        entry,
-        async_add_entities,
-        SENSOR_DESCRIPTIONS,
-        module_map=P5_MODULE_MAP,
-        coordinator_cls=P5Coordinator,
-    )
+P5_SPEC = ModelSpec(
+    model="P5",
+    pages={
+        MODULE_INFO: "/admin/system/wizard",
+        MODULE_SYSTEM: "/admin/system/status?detail=1",
+        MODULE_MESH: "/admin/network/mesh/status?detail=1",
+        MODULE_LAN: "/admin/network/lan/status?detail=1",
+        MODULE_WIRELESS_24G: "/admin/network/wireless/status?detail=1&iface=wlan00",
+        MODULE_WIRELESS_5G: "/admin/network/wireless/status?detail=1&iface=wlan10",
+        MODULE_DHCP: "/admin/services/dhcp/status?detail=1",
+        MODULE_GSM: "/admin/network/gcom/status",
+        MODULE_SMS: "/admin/network/gcom/sms/status",
+        MODULE_DEVICES: "/admin/network/devices/status?detail=1",
+    },
+    parsers={
+        MODULE_INFO: parse_basic_info,
+        MODULE_SYSTEM: parse_system_info,
+        MODULE_MESH: parse_mesh_info,
+        MODULE_LAN: parse_lan_info,
+        MODULE_WIRELESS_24G: parse_wireless_24g_info,
+        MODULE_WIRELESS_5G: parse_wireless_5g_info,
+        MODULE_DHCP: parse_dhcp_info,
+        MODULE_GSM: parse_gsm_info,
+        MODULE_SMS: parse_sms_info,
+        MODULE_DEVICES: parse_devices,
+    },
+    device_list_page="/admin/network/devices/devlist?detail=1",
+    device_list_parser=parse_device_list,
+    platforms={"sensor", "button", "device_tracker"},
+    supports_reboot=True,
+    module_map=build_module_map(),
+    sensor_descriptions=SENSOR_DESCRIPTIONS_P5,
+)
+register_spec(P5_SPEC)

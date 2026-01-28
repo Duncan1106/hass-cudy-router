@@ -2,6 +2,10 @@
 
 DOMAIN = "hass_cudy_router"
 
+PLATFORMS = {"sensor", "button", "device_tracker"}
+
+DEFAULT_SCAN_INTERVAL = 30
+
 MODULE_INFO = "info"
 MODULE_DEVICES = "devices"
 MODULE_MESH = "mesh"
@@ -35,7 +39,6 @@ SENSOR_WAN_PUBLIC_IP = "wan_public_ip"
 SENSOR_WAN_IP = "wan_ip"
 SENSOR_WAN_DNS = "wan_dns"
 SENSOR_WAN_TYPE = "wan_type"
-SENSOR_WAN_GATEWAY = "wan_gateway"
 SENSOR_WAN_UPTIME = "wan_uptime"
 ## LAN
 SENSOR_LAN_IP = "lan_ip"
@@ -63,9 +66,9 @@ SENSOR_DEVICE_BLOCKED = "device_blocked"
 SENSOR_DHCP_IP_START = "dhcp_ip_start"
 SENSOR_DHCP_IP_END = "dhcp_ip_end"
 SENSOR_DHCP_DNS_PRIMARY = "dhcp_dns_primary"
-SENSOR_DHCP_DNS_SECONDARY = "device_dns_secondary"
-SENSOR_DHCP_GATEWAY = "device_gateway"
-SENSOR_DHCP_LEASE_TIME = "device_lease_time"
+SENSOR_DHCP_DNS_SECONDARY = "dhcp_dns_secondary"
+SENSOR_DHCP_GATEWAY = "dhcp_gateway"
+SENSOR_DHCP_LEASE_TIME = "dhcp_lease_time"
 ## GSM
 SENSOR_GSM_NETWORK_TYPE = "gsm_network_type"
 SENSOR_GSM_DOWNLOAD = "gsm_download"
