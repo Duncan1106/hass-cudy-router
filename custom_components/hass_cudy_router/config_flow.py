@@ -16,8 +16,8 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DOMAIN, OPTIONS_DEVICE_LIST
 from .client import CudyClient
+from .const import DOMAIN, OPTIONS_DEVICE_LIST
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,8 +47,18 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     username = data[CONF_USERNAME]
     password = data[CONF_PASSWORD]
 
-    client = CudyClient(host=host, username=username, password=password, use_https=use_https)
+    try:
+        client = CudyClient(
+            host=host,
+            username=username,
+            password=password,
+            use_https=use_https,
+        )
+    except Exception as err:  # very defensive
+        _LOGGER.debug("Error constructing CudyClient for %s: %s", host, err)
+        raise CannotConnect from err
 
+    ok = False
     try:
         ok = await client.authenticate()
     except Exception as err:
@@ -81,11 +91,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except CannotConnect:
                 errors["base"] = "cannot_connect"
-            except Exception:
+            except Exception:  # extra safety; also mapped to cannot_connect
                 _LOGGER.exception("Unexpected exception during config flow")
-                errors["base"] = "unknown"
+                errors["base"] = "cannot_connect"
             else:
-                return self.async_create_entry(title=info["title"], data=user_input)
+                await self.async_set_unique_id(user_input[CONF_HOST])
+                self._abort_if_unique_id_configured()
+
+                return self.async_create_entry(
+                    title=info["title"],
+                    data=user_input,
+                )
 
         return self.async_show_form(
             step_id="user",
@@ -101,10 +117,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
-    """Handle options."""
-
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self.config_entry = config_entry
+        self._config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -118,11 +132,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Optional(
                         CONF_SCAN_INTERVAL,
-                        default=self.config_entry.options.get(CONF_SCAN_INTERVAL, 30),
+                        default=self._config_entry.options.get(CONF_SCAN_INTERVAL, 30),
                     ): int,
                     vol.Optional(
                         OPTIONS_DEVICE_LIST,
-                        default=self.config_entry.options.get(OPTIONS_DEVICE_LIST, ""),
+                        default=self._config_entry.options.get(OPTIONS_DEVICE_LIST, ""),
                     ): str,
                 }
             ),

@@ -59,9 +59,6 @@
       "wan_ip": {
         "name": "Adres IP WAN"
       },
-      "wan_gateway": {
-        "name": "Brama WAN"
-      },
       "wan_dns": {
         "name": "Adresy DNS WAN"
       },
@@ -70,12 +67,6 @@
       },
       "wan_uptime": {
         "name": "Czas połączenia WAN"
-      },
-      "wan_download_speed": {
-        "name": "Prędkość pobierania WAN"
-      },
-      "wan_upload_speed": {
-        "name": "Prędkość wysyłania WAN"
       },
       "lan_ip": {
         "name": "Adres IP LAN"
@@ -164,13 +155,13 @@
       "dhcp_dns_primary": {
         "name": "Preferowany adres DNS"
       },
-      "device_dns_secondary": {
+      "dhcp_dns_secondary": {
         "name": "Alternatywny adres DNS"
       },
-      "device_gateway": {
+      "dhcp_gateway": {
         "name": "Domyślna bramka"
       },
-      "device_lease_time": {
+      "dhcp_lease_time": {
         "name": "Czas dzierżawy"
       }
     },
