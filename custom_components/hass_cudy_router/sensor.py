@@ -1,17 +1,24 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import *
 from .coordinator import CudyCoordinator
-from .models import ModelSpec
+
+
+@dataclass(frozen=True)
+class _SensorDef:
+    module: str
+    key: str
+    icon: str | None
+    entity_category: Any | None
+    state_class: Any | None
 
 
 async def async_setup_entry(
@@ -21,68 +28,62 @@ async def async_setup_entry(
 ) -> None:
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator: CudyCoordinator = data["coordinator"]
-    spec: ModelSpec = data["spec"]
+    entities: list[CudySensor] = []
+    modules: dict[str, dict[str, Any]] = coordinator.data or {}
+    for module_name, module_data in modules.items():
+        if module_name == MODULE_DEVICE_LIST:
+            continue
+        sensor_defs = SENSORS.get(module_name, [])
+        if not isinstance(module_data, dict) or not sensor_defs:
+            continue
+        for sd in sensor_defs:
+            sensor_key = sd.get(SENSORS_KEY_KEY)
+            if not sensor_key:
+                continue
 
-    if "sensor" not in spec.platforms:
-        return
+            if sensor_key not in module_data:
+                continue
+            entities.append(
+                CudySensor(
+                    coordinator=coordinator,
+                    entry=entry,
+                    sensor_def=_SensorDef(
+                        module=module_name,
+                        key=sensor_key,
+                        icon=sd.get(SENSORS_KEY_ICON),
+                        entity_category=sd.get(SENSORS_KEY_CATEGORY),
+                        state_class=sd.get(SENSORS_KEY_CLASS),
+                    ),
+                )
+            )
 
-    entities = [CudySensor(coordinator, entry, desc, spec) for desc in spec.sensor_descriptions]
     async_add_entities(entities)
 
 
-class CudySensor(CoordinatorEntity, SensorEntity):
+class CudySensor(SensorEntity):
     _attr_has_entity_name = True
 
-    def __init__(
-        self,
-        coordinator: CudyCoordinator,
-        entry: ConfigEntry,
-        description: SensorEntityDescription,
-        spec: ModelSpec,
-    ) -> None:
-        super().__init__(coordinator)
-        self.entity_description = description
-        self._spec = spec
+    def __init__(self, coordinator: CudyCoordinator, entry: ConfigEntry, sensor_def: _SensorDef) -> None:
+        self.coordinator = coordinator
         self._entry = entry
+        self._def = sensor_def
 
-        entry_data = getattr(entry, "data", {})
-        self._host = entry_data.get("host", "") if isinstance(entry_data, dict) else ""
-
-        self._attr_unique_id = f"{entry.entry_id}_{description.key}"
+        self._attr_unique_id = f"{entry.entry_id}_{sensor_def.key}"
+        self._attr_icon = sensor_def.icon
+        self._attr_entity_category = sensor_def.entity_category
+        self._attr_state_class = sensor_def.state_class
 
     @property
-    def device_info(self) -> DeviceInfo:
-        stable_id = (
-            getattr(self._entry, "unique_id", None)
-            or self._host
-            or getattr(self._entry, "entry_id", "")
-        )
-
-        data = getattr(self.coordinator, "data", None) or {}
-        system = data.get(MODULE_SYSTEM, {}) if isinstance(data, dict) else {}
-
-        sw_version = None
-        if isinstance(system, dict):
-            sw_version = system.get(SENSOR_SYSTEM_FIRMWARE_VERSION) or system.get(SENSOR_FIRMWARE_VERSION)
-
-        return DeviceInfo(
-            identifiers={(DOMAIN, stable_id)},
-            name=f"Cudy Router ({self._host})" if self._host else "Cudy Router",
-            manufacturer="Cudy",
-            model=self._spec.model,
-            sw_version=sw_version,
-        )
+    def available(self) -> bool:
+        return getattr(self.coordinator, "last_update_success", True)
 
     @property
     def native_value(self) -> Any:
-        data = getattr(self.coordinator, "data", None) or {}
-        key = self.entity_description.key
+        data = self.coordinator.data or {}
+        module = data.get(self._def.module, {})
+        if not isinstance(module, dict):
+            return None
+        return module.get(self._def.key)
 
-        for prefix, module in self._spec.module_map.items():
-            if key.startswith(prefix):
-                module_data = data.get(module, {})
-                if isinstance(module_data, dict):
-                    return module_data.get(key)
-                return None
-
-        return data.get(key)
+    async def async_added_to_hass(self) -> None:
+        self.coordinator.async_add_listener(self.async_write_ha_state)

@@ -11,7 +11,6 @@ from custom_components.hass_cudy_router.device_tracker import (
     async_setup_entry,
     CudyDeviceTracker,
 )
-from custom_components.hass_cudy_router.models import get_spec
 
 
 @pytest.fixture
@@ -26,7 +25,7 @@ def coordinator() -> MagicMock:
 def _set_devices(coordinator: MagicMock, devices: list[dict[str, Any]]) -> None:
     coordinator.data = {
         MODULE_DEVICES: {
-            OPTIONS_DEVICE_LIST: devices,
+            MODULE_DEVICE_LIST: devices,
         }
     }
 
@@ -38,11 +37,9 @@ async def test_async_setup_entry_adds_entities(
     entry = MagicMock()
     entry.entry_id = "test_entry"
 
-    spec = get_spec("WR6500")
-
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
         "coordinator": coordinator,
-        "spec": spec,
+        #"spec": spec,
     }
 
     _set_devices(

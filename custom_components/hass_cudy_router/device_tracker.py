@@ -39,7 +39,7 @@ def _get_devices(coordinator_data: dict[str, Any] | None) -> list[dict[str, Any]
     if not coordinator_data:
         return []
     mod = coordinator_data.get(MODULE_DEVICES, {}) or {}
-    devs = mod.get(OPTIONS_DEVICE_LIST, []) or []
+    devs = mod.get(MODULE_DEVICE_LIST, []) or []
     return [
         d for d in devs
         if isinstance(d, dict) and d.get(DEVICE_MAC)

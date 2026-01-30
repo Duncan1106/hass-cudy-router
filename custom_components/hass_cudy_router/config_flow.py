@@ -17,7 +17,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
 from .client import CudyClient
-from .const import DOMAIN, OPTIONS_DEVICE_LIST
+from .const import DOMAIN, MODULE_DEVICE_LIST
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -135,8 +135,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         default=self._config_entry.options.get(CONF_SCAN_INTERVAL, 30),
                     ): int,
                     vol.Optional(
-                        OPTIONS_DEVICE_LIST,
-                        default=self._config_entry.options.get(OPTIONS_DEVICE_LIST, ""),
+                        MODULE_DEVICE_LIST,
+                        default=self._config_entry.options.get(MODULE_DEVICE_LIST, ""),
                     ): str,
                 }
             ),

@@ -1,6 +1,9 @@
+import re
+
 import pytest
 
-from custom_components.hass_cudy_router.model_detect import detect_model
+from custom_components.hass_cudy_router.const import CUDY_DEVICES
+from custom_components.hass_cudy_router.model_detect import detect_model, normalize_model_name
 from tests.cudy_router.fixtures import read_html
 
 class FakeClient:
@@ -10,23 +13,10 @@ class FakeClient:
         return self._html
 
 @pytest.mark.asyncio
-async def test_detect_model_wr6500():
-    html = read_html("wr6500", "system.html")
+@pytest.mark.parametrize("model", CUDY_DEVICES)
+async def test_detect_model(model):
+    html = read_html(model, "system.html")
     client = FakeClient(html)
-    model = await detect_model(client)
-    assert model  == "WR6500"
 
-@pytest.mark.asyncio
-async def test_detect_model_p5():
-    html = read_html("p5", "system.html")
-    client = FakeClient(html)
-    model = await detect_model(client)
-    assert model == "P5"
-
-
-@pytest.mark.asyncio
-async def test_detect_model_r700():
-    html = read_html("r700", "system.html")
-    client = FakeClient(html)
-    model = await detect_model(client)
-    assert model == "R700"
+    found_model = await detect_model(client)
+    assert normalize_model_name(found_model) == model

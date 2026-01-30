@@ -8,6 +8,7 @@ from homeassistant.core import HomeAssistant
 from . import registry
 from .client import CudyClient
 from .const import DOMAIN
+from .model_detect import detect_model
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     try:
-        from .model_detect import detect_model
         model = await detect_model(client)
     except Exception:
         _LOGGER.debug("Model detection failed, falling back to Generic", exc_info=True)

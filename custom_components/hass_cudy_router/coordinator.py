@@ -14,6 +14,27 @@ from .const import DEFAULT_SCAN_INTERVAL
 _LOGGER = logging.getLogger(__name__)
 
 
+def _discover_available_sensor_keys(parsed: dict) -> tuple[set[str], set[str]]:
+    available_sensors: set[str] = set()
+    available_modules: set[str] = set()
+
+    if not isinstance(parsed, dict):
+        return available_sensors, available_modules
+
+    for module, payload in parsed.items():
+        if not isinstance(module, str):
+            continue
+        if not isinstance(payload, dict):
+            continue
+
+        available_modules.add(module)
+        for k, v in payload.items():
+            if isinstance(k, str) and v is not None:
+                available_sensors.add(k)
+
+    return available_sensors, available_modules
+
+
 class CudyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def __init__(
@@ -23,7 +44,8 @@ class CudyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         api: Any,
         host: str | None = None,
     ) -> None:
-        scan_seconds = int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+        options = getattr(entry, "options", None) or {}
+        scan_seconds = int(options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
 
         super().__init__(
             hass,
