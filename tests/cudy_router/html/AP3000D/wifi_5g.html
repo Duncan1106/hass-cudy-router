@@ -1,218 +1,698 @@
-<!DOCTYPE html>
-<html lang="en">
- <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <title>AP3000D</title>
-
-  <link rel="icon" href="/emulator/AP3000D/luci-static/light/img/favicon.ico">
-
-  <link rel="stylesheet" href="/emulator/AP3000D/luci-static/light/css/bootstrap.min.css?v=git-25.059.30984-3f83095">
-  <link rel="stylesheet" href="/emulator/AP3000D/luci-static/light/css/font-awesome.min.css?v=git-25.059.30984-3f83095">
-  <link rel="stylesheet" href="/emulator/AP3000D/luci-static/light/css/flatpickr.min.css?v=git-25.059.30984-3f83095">
-  <link rel="stylesheet" href="/emulator/AP3000D/luci-static/light/css/iconfont.css?v=git-25.059.30984-3f83095">
-  <link rel="stylesheet" href="/emulator/AP3000D/luci-static/light/css/setup.css?v=git-25.059.30984-3f83095">
-
-  <script src="/emulator/AP3000D/luci-static/light/js/jquery.min.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/bootstrap.min.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/jquery.validate.min.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/additional-methods.min.js?v=git-25.059.30984-3f83095"></script>
-  
-  <script src="/emulator/AP3000D/luci-static/light/js/flatpickr.min.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/echarts.min.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/macarons.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/sha256.min.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/cbi.js?v=git-25.059.30984-3f83095"></script>
-  <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
-  <!--[if lt IE 9]>
-  <script src="/emulator/AP3000D/luci-static/light/js/html5shiv.min.js?v=git-25.059.30984-3f83095"></script>
-  <script src="/emulator/AP3000D/luci-static/light/js/respond.min.js?v=git-25.059.30984-3f83095"></script>
-  <![endif]-->
- </head>
-
-<body>
-
-<nav class="navbar" role="navigation">
-<div class="navbar-inverse navbar-static-top">
-	<div class="container">
-		<embed style="width:88px; height:69px;" src="/emulator/AP3000D/luci-static/resources/logo.svg?v=git-25.059.30984-3f83095" />
+<form class="form-horizontal" role="form" method="post" name="cbi" action="/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/multi_ssid_config?embedded=&iface=wlan10" enctype="multipart/form-data" onkeydown="if(event.keyCode==13){return false;}">
+	<div>
+		<input type="hidden" name="token" value="4a44e432ec471b6b1e85030df5280c7d" />
+		<input type="hidden" name="timeclock" value="" />
+		<input type="hidden" name="cbi.submit" value="1" />
+		<input type="password" class="sr-only">
 	</div>
-</div>
-
-<nav class="navbar-default navbar-static-top">
-	<div class="container-fluid">
-		<ul class="nav navbar-nav navbar-left hidden-xs">
-			<li ><a href="/emulator/AP3000D/cgi-bin/luci/"><h4>&nbsp;&nbsp;<i class="icon icon-status"></i>&nbsp;System Status&nbsp;&nbsp;</h4></a></li>
-			
-			<li ><a href="/emulator/AP3000D/cgi-bin/luci/admin/wizard"><h4>&nbsp;&nbsp;<i class="fa fa-rocket"></i>&nbsp;Quick Setup&nbsp;&nbsp;</h4></a></li>
-			
-			<li ><a href="/emulator/AP3000D/cgi-bin/luci/admin/setup"><h4>&nbsp;&nbsp;<i class="fa fa-cog"></i>&nbsp;General Settings&nbsp;&nbsp;</h4></a></li>
-			
-			<li ><a href="/emulator/AP3000D/cgi-bin/luci/admin/panel"><h4>&nbsp;&nbsp;<i class="icon icon-advanced"></i>&nbsp;Advanced Settings&nbsp;&nbsp;</h4></a></li>
-			<li ><a href="/emulator/AP3000D/cgi-bin/luci/admin/tools"><h4>&nbsp;&nbsp;<i class="icon icon-tools"></i>&nbsp;Diagnostic Tools&nbsp;&nbsp;</h4></a></li>
-		</ul>
-	</div>
-</nav>
-
-</nav>
-
-<noscript>
-	<div class="alert-message warning">
-		<strong>JavaScript required!</strong><br />
-		You must enable JavaScript in your browser or LuCI will not work properly.
-	</div>
-</noscript>
-
-<div class="container">
 
 
-<style type="text/css">
-@media screen and (max-width: 767px) {
-	.col-sm-10 {
-		position: relative;
-		min-height: 1px;
-		padding-right: 0px;
-		padding-left: 0px;
-	}
-}
-</style>
-<div data-show="statuspage"></div>
-<h4><ul class="breadcrumb">
-	<li><a href="/emulator/AP3000D/cgi-bin/luci/"><i class="icon icon-status"></i>&nbsp;System Status</a></li>
-	<li class="active"><i class="icon icon-wifi"></i>&nbsp;&nbsp;Wireless 5G</li>
-</ul></h4>
 
-<ul class="nav nav-pills visible-xs">
+<div>
 	
-		                                                                               
-			<li class="active"><a href="#tab-status-1" data-toggle="tab">Status</a></li>
-		                                                                               
-			<li ><a href="#tab-status-2" data-toggle="tab">Settings</a></li>
+		<br />
+	
 		
-	
-</ul>
-<div class="visible-xs"><br /></div>
-<div class="col-sm-2 text-center">
-<ul class="nav nav-tabs nav-pills nav-stacked hidden-xs">
-	
-		<li class="active"><a href="#tab-status-1" data-toggle="tab">Status</a></li>
-	
-		<li ><a href="#tab-status-2" data-toggle="tab">Settings</a></li>
-	
-</ul>
-</div>
-<div class="col-sm-10">
+		
+		
+			
+			
 
-<div class="tab-content">
-	
-		<div class="tab-pane fade in active" id="tab-status-1">
-			<div class="text-center" style="height:180px">
-				<br/><br /><br />
-				<i class="fa fa-spinner fa-pulse fa-2x text-primary"></i>
-			</div>
-		</div>
-		<script type="text/javascript">cbi_xhr_load("#tab-status-1", "poll", "/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/multi_ssid_status", "detail=1&iface=wlan10");</script>
-	
-		<div class="tab-pane fade " id="tab-status-2">
-			<div class="text-center" style="height:180px">
-				<br/><br /><br />
-				<i class="fa fa-spinner fa-pulse fa-2x text-primary"></i>
-			</div>
-		</div>
-		<script type="text/javascript">cbi_xhr_load("#tab-status-2", "get", "/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config", "nomodal=&iface=multissid");</script>
-	
-</div>
+<!-- /nsection -->
+
+<script type="text/javascript">//<![CDATA[
+	$(function() {
+		$("input").keypress(function (e) {
+			var keyCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
+			if (keyCode == 13) {
+				for (var i = 0; i < this.form.elements.length; i++) {
+					if (this == this.form.elements[i]) break;
+				}
+				i = (i + 1) % this.form.elements.length;
+				this.form.elements[i].focus();
+				return false;
+			} else {
+				return true;
+			}
+		});
+	});
+
+//]]></script>
+<!-- tblsection -->
+<legend>SSID</legend><div class="table-responsive">
+<table class="table table-striped">
+	<thead>
+	<tr><th>SSID</th><th>Encryption</th><th>Hidden Network</th><th>Separate Clients</th><th>SSID Isolation</th><th>Enable</th><th>Modify</th></tr>
+	</thead>
+	<tbody>
+	<tr class="cbi-section-table-descr"></tr><tr id="cbi-wireless-wlan10" ondragstart="drag_start(event);" ondragend="drag_end(event);" ondragenter="drag_enter(event);" ondragleave="drag_leave(event);" ondrop="drag_drop(event);" ondragover="drag_over(event);"  data-sid="wlan10" data-store="cbi.sts.wireless.wifi-iface">
+		<td><div id="cbi-wireless-wlan10-ssid">
+
+
+
+
+	<p class="form-control-static hidden-xs">Cudy-9511-5G</p>
+	<p class="visible-xs">Cudy-9511-5G</p>
+
 
 </div>
+<div id="cbip-wireless-wlan10-ssid"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan10-encryption">
+
+
+
+
+	<p class="form-control-static hidden-xs">WPA-PSK/WPA2-PSK</p>
+	<p class="visible-xs">WPA-PSK/WPA2-PSK</p>
+
+
+</div>
+<div id="cbip-wireless-wlan10-encryption"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan10-hidden">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan10-hidden"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan10-isolate">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan10-isolate"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan10-ssid_isolation">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan10-ssid_isolation"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan10-disabled">
+
+
+	<input type="hidden" value="1" name="cbi.cbe.wireless.wlan10.disabled" />
+	<input type="hidden" id="cbid.wireless.wlan10.disabled" name="cbid.wireless.wlan10.disabled" value="0" />
+
+	
+			<i class="fa fa-toggle-on  fa-2x text-primary" 
+			   onclick="if (this.classList.contains('fa-toggle-off')) { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan10'); 
+			   	
+			   } else { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan10');
+			   	
+			   }"></i>
+			
+	
+
+	<i class="fa fa-spinner fa-2x fa-pulse text-primary hidden"></i>
+</div>
+<div id="cbip-wireless-wlan10-disabled"></div>
+</td>
+
+
+
+<td nowrap="nowrap"><button class="btn btn-link" type="submit" onclick='cbi_show_modal(this, "/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/multi_ssid_add_edit_ssid/wlan10");return false;'  data-action="modal"><i class="fa fa-edit fa-lg"></i></button>
+			<button class="btn btn-link"  data-action="modal" type="submit" onclick="cbi_disabled_validate('cbid.wireless.wlan10');this.form.cbi_state='del-section'; return true" name="cbi.rts.wireless.wlan10" alt="Delete"><i class="fa fa-trash-o fa-lg"></i></button>
+			<button class="btn btn-link hidden" type="button" disabled=true><i class="fa fa-spinner fa-pulse fa-lg"></i> Delete</button></td></tr><tr id="cbi-wireless-wlan15" ondragstart="drag_start(event);" ondragend="drag_end(event);" ondragenter="drag_enter(event);" ondragleave="drag_leave(event);" ondrop="drag_drop(event);" ondragover="drag_over(event);"  data-sid="wlan15" data-store="cbi.sts.wireless.wifi-iface">
+		<td><div id="cbi-wireless-wlan15-ssid">
+
+
+
+
+	<p class="form-control-static hidden-xs">Cudy-9511-5G-1</p>
+	<p class="visible-xs">Cudy-9511-5G-1</p>
+
+
+</div>
+<div id="cbip-wireless-wlan15-ssid"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan15-encryption">
+
+
+
+
+	<p class="form-control-static hidden-xs">No Encryption</p>
+	<p class="visible-xs">No Encryption</p>
+
+
+</div>
+<div id="cbip-wireless-wlan15-encryption"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan15-hidden">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan15-hidden"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan15-isolate">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan15-isolate"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan15-ssid_isolation">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan15-ssid_isolation"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan15-disabled">
+
+
+	<input type="hidden" value="1" name="cbi.cbe.wireless.wlan15.disabled" />
+	<input type="hidden" id="cbid.wireless.wlan15.disabled" name="cbid.wireless.wlan15.disabled" value="0" />
+
+	
+			<i class="fa fa-toggle-on  fa-2x text-primary" 
+			   onclick="if (this.classList.contains('fa-toggle-off')) { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan15'); 
+			   	
+			   } else { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan15');
+			   	
+			   }"></i>
+			
+	
+
+	<i class="fa fa-spinner fa-2x fa-pulse text-primary hidden"></i>
+</div>
+<div id="cbip-wireless-wlan15-disabled"></div>
+</td>
+
+
+
+<td nowrap="nowrap"><button class="btn btn-link" type="submit" onclick='cbi_show_modal(this, "/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/multi_ssid_add_edit_ssid/wlan15");return false;'  data-action="modal"><i class="fa fa-edit fa-lg"></i></button>
+			<button class="btn btn-link"  data-action="modal" type="submit" onclick="cbi_disabled_validate('cbid.wireless.wlan15');this.form.cbi_state='del-section'; return true" name="cbi.rts.wireless.wlan15" alt="Delete"><i class="fa fa-trash-o fa-lg"></i></button>
+			<button class="btn btn-link hidden" type="button" disabled=true><i class="fa fa-spinner fa-pulse fa-lg"></i> Delete</button></td></tr><tr id="cbi-wireless-wlan16" ondragstart="drag_start(event);" ondragend="drag_end(event);" ondragenter="drag_enter(event);" ondragleave="drag_leave(event);" ondrop="drag_drop(event);" ondragover="drag_over(event);"  data-sid="wlan16" data-store="cbi.sts.wireless.wifi-iface">
+		<td><div id="cbi-wireless-wlan16-ssid">
+
+
+
+
+	<p class="form-control-static hidden-xs">Cudy-9511-5G-2</p>
+	<p class="visible-xs">Cudy-9511-5G-2</p>
+
+
+</div>
+<div id="cbip-wireless-wlan16-ssid"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan16-encryption">
+
+
+
+
+	<p class="form-control-static hidden-xs">WPA2-PSK</p>
+	<p class="visible-xs">WPA2-PSK</p>
+
+
+</div>
+<div id="cbip-wireless-wlan16-encryption"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan16-hidden">
+
+
+
+
+	<p class="form-control-static hidden-xs">Enabled</p>
+	<p class="visible-xs">Enabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan16-hidden"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan16-isolate">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan16-isolate"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan16-ssid_isolation">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan16-ssid_isolation"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan16-disabled">
+
+
+	<input type="hidden" value="1" name="cbi.cbe.wireless.wlan16.disabled" />
+	<input type="hidden" id="cbid.wireless.wlan16.disabled" name="cbid.wireless.wlan16.disabled" value="0" />
+
+	
+			<i class="fa fa-toggle-on  fa-2x text-primary" 
+			   onclick="if (this.classList.contains('fa-toggle-off')) { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan16'); 
+			   	
+			   } else { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan16');
+			   	
+			   }"></i>
+			
+	
+
+	<i class="fa fa-spinner fa-2x fa-pulse text-primary hidden"></i>
+</div>
+<div id="cbip-wireless-wlan16-disabled"></div>
+</td>
+
+
+
+<td nowrap="nowrap"><button class="btn btn-link" type="submit" onclick='cbi_show_modal(this, "/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/multi_ssid_add_edit_ssid/wlan16");return false;'  data-action="modal"><i class="fa fa-edit fa-lg"></i></button>
+			<button class="btn btn-link"  data-action="modal" type="submit" onclick="cbi_disabled_validate('cbid.wireless.wlan16');this.form.cbi_state='del-section'; return true" name="cbi.rts.wireless.wlan16" alt="Delete"><i class="fa fa-trash-o fa-lg"></i></button>
+			<button class="btn btn-link hidden" type="button" disabled=true><i class="fa fa-spinner fa-pulse fa-lg"></i> Delete</button></td></tr><tr id="cbi-wireless-wlan17" ondragstart="drag_start(event);" ondragend="drag_end(event);" ondragenter="drag_enter(event);" ondragleave="drag_leave(event);" ondrop="drag_drop(event);" ondragover="drag_over(event);"  data-sid="wlan17" data-store="cbi.sts.wireless.wifi-iface">
+		<td><div id="cbi-wireless-wlan17-ssid">
+
+
+
+
+	<p class="form-control-static hidden-xs">Cudy-9511-5G-3</p>
+	<p class="visible-xs">Cudy-9511-5G-3</p>
+
+
+</div>
+<div id="cbip-wireless-wlan17-ssid"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan17-encryption">
+
+
+
+
+	<p class="form-control-static hidden-xs">WPA3-SAE</p>
+	<p class="visible-xs">WPA3-SAE</p>
+
+
+</div>
+<div id="cbip-wireless-wlan17-encryption"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan17-hidden">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan17-hidden"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan17-isolate">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan17-isolate"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan17-ssid_isolation">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan17-ssid_isolation"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan17-disabled">
+
+
+	<input type="hidden" value="1" name="cbi.cbe.wireless.wlan17.disabled" />
+	<input type="hidden" id="cbid.wireless.wlan17.disabled" name="cbid.wireless.wlan17.disabled" value="1" />
+
+	
+			<i class="fa fa-toggle-off  fa-2x text-primary" 
+			   onclick="if (this.classList.contains('fa-toggle-off')) { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan17'); 
+			   	
+			   } else { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan17');
+			   	
+			   }"></i>
+			
+	
+
+	<i class="fa fa-spinner fa-2x fa-pulse text-primary hidden"></i>
+</div>
+<div id="cbip-wireless-wlan17-disabled"></div>
+</td>
+
+
+
+<td nowrap="nowrap"><button class="btn btn-link" type="submit" onclick='cbi_show_modal(this, "/emulator/AP3000D/cgi-bin/luci/admin/network/wireless/config/multi_ssid_add_edit_ssid/wlan17");return false;'  data-action="modal"><i class="fa fa-edit fa-lg"></i></button>
+			<button class="btn btn-link"  data-action="modal" type="submit" onclick="cbi_disabled_validate('cbid.wireless.wlan17');this.form.cbi_state='del-section'; return true" name="cbi.rts.wireless.wlan17" alt="Delete"><i class="fa fa-trash-o fa-lg"></i></button>
+			<button class="btn btn-link hidden" type="button" disabled=true><i class="fa fa-spinner fa-pulse fa-lg"></i> Delete</button></td></tr></tbody>
+</table>
+</div>
+<div class="form-group">
+		
+		<div class="col-xs-12">
+			<button class="btn btn-success"  data-action="modal" type="submit" name="cbi.cts.wireless.wifi-iface.wlan17"><i class="fa fa-plus-circle fa-lg"></i> Add</button>
+			<button class="btn btn-success hidden" type="button" disabled=true><i class="fa fa-spinner fa-pulse fa-lg"></i> Please Wait...</button>
+		</div>
+		
+	</div><!-- /tblsection -->
+		<h4 class="page-header">Advanced Settings</h4>
+		
+		
+			<div class="form-group" id="cbi-wireless-wlan10-hwmode"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.hwmode">Mode</label>
+		<div class="col-sm-5">
+
+<select class="form-control" onchange="wireless_update_hwmode_5g(this.value)" id="cbid.wireless.wlan10.hwmode" name="cbid.wireless.wlan10.hwmode">
+<option  value="11anacax" selected="selected">5GHz (802.11a+n+ac+ax)</option><option  value="11anac">5GHz (802.11a+n+ac)</option><option  value="11an">5GHz (802.11a+n)</option><option  value="11a">5GHz (802.11a)</option>
+</select>
+<small class="text-danger"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> If you find that some clients have problems connecting to 5GHz WiFi, please update the client&#39;s wireless network card driver to the latest version. If still have problems, please adjust the wireless mode of the router to 5GHz (802.11a+n+ac).
+</small>
+	</div>
+		</div>
+
+
 
 
 <script type="text/javascript">//<![CDATA[
-$(document).ready(function() {
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-		$(window).resize();
-	});
-});
-//]]></script>
+function wireless_update_hwmode_5g(value) {
+	if (value.includes("11anacax")) {
+		$("[id='cbid.wireless.wlan10.hwmode']").next().show();
+	} else {
+		$("[id='cbid.wireless.wlan10.hwmode']").next().hide();
+	}
+
+	cbi_d_update();
+}
+wireless_update_hwmode_5g("11anacax");
+//]]></script><div class="form-group" id="cbi-wireless-wlan10-htbw1"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.htbw1">Channel Width</label>
+		<div class="col-sm-5">
 
 
-<div class="visible-xs"><p> <br /><br /></p></div>
-</div>
-	<div class="modal fade" id="cbi-modal" tabindex="-1" role="dialog" aria-labelledby="cbi-modal-label" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-body" style="height:300px">
-					<div class="row clearfix text-center">
-						<br/><br /><br /><br /><br />
-						<i class="fa fa-spinner fa-pulse fa-2x text-primary"></i>
-					</div>
-				</div>
-			</div>
+	<select class="form-control" onchange="cbi_d_update(this.id)" id="cbid.wireless.wlan10.htbw1" name="cbid.wireless.wlan10.htbw1">
+	<option  id="cbi-wireless-wlan10-htbw1-auto" value="auto" selected="selected">Auto</option><option  id="cbi-wireless-wlan10-htbw1-ht20" value="ht20">20 MHz</option><option  id="cbi-wireless-wlan10-htbw1-ht40" value="ht40">40 MHz</option>
+	</select>
+
+	</div>
+		</div>
+
+
+<script type="text/javascript" id="cbip-wireless-wlan10-htbw1">
+		
+		cbi_d_add("cbi-wireless-wlan10-htbw1", {"cbid.wireless.wlan10.hwmode":"11an"}, "cbip-wireless-wlan10-htbw1");
+	</script>
+
+<div class="form-group" id="cbi-wireless-wlan10-htbw3"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.htbw3">Channel Width</label>
+		<div class="col-sm-5">
+
+
+	<select class="form-control" onchange="cbi_d_update(this.id)" id="cbid.wireless.wlan10.htbw3" name="cbid.wireless.wlan10.htbw3">
+	<option  id="cbi-wireless-wlan10-htbw3-auto" value="auto" selected="selected">Auto</option><option  id="cbi-wireless-wlan10-htbw3-ht20" value="ht20">20 MHz</option><option  id="cbi-wireless-wlan10-htbw3-ht40" value="ht40">40 MHz</option><option  id="cbi-wireless-wlan10-htbw3-ht80" value="ht80">80 MHz</option><option  id="cbi-wireless-wlan10-htbw3-ht160" value="ht160">160 MHz</option>
+	</select>
+
+	</div>
+		</div>
+
+
+<script type="text/javascript" id="cbip-wireless-wlan10-htbw3">
+		
+		cbi_d_add("cbi-wireless-wlan10-htbw3", {"cbid.wireless.wlan10.hwmode":"11anac"}, "cbip-wireless-wlan10-htbw3");cbi_d_add("cbi-wireless-wlan10-htbw3", {"cbid.wireless.wlan10.hwmode":"11anacax"}, "cbip-wireless-wlan10-htbw3");cbi_d_add("cbi-wireless-wlan10-htbw3", {"cbid.wireless.wlan10.hwmode":"11anacaxbe"}, "cbip-wireless-wlan10-htbw3");
+	</script>
+
+<div class="form-group" id="cbi-wireless-wlan10-channel"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.channel">Channel</label>
+		<div class="col-sm-5">
+
+<select class="form-control" onchange="wireless_update_channel_channel(this.value)" id="cbid.wireless.wlan10.channel" name="cbid.wireless.wlan10.channel">
+<option  value="0" selected="selected">Auto</option><option  value="36">36 (5180 MHz)</option><option  value="40">40 (5200 MHz)</option><option  value="44">44 (5220 MHz)</option><option  value="48">48 (5240 MHz)</option><option  value="52">52 (5260 MHz)</option><option  value="56">56 (5280 MHz)</option><option  value="60">60 (5300 MHz)</option><option  value="64">64 (5320 MHz)</option><option  value="100">100 (5500 MHz)</option><option  value="104">104 (5520 MHz)</option><option  value="108">108 (5540 MHz)</option><option  value="112">112 (5560 MHz)</option><option  value="116">116 (5580 MHz)</option><option  value="120">120 (5600 MHz)</option><option  value="124">124 (5620 MHz)</option><option  value="128">128 (5640 MHz)</option><option  value="132">132 (5660 MHz)</option><option  value="136">136 (5680 MHz)</option><option  value="140">140 (5700 MHz)</option>
+</select>
+<small class="text-danger"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Your configuration involves the DFS band, in order to meet the usage requirements of the DFS band, the system startup time may be much longer than normal startup time. Please confirm if you want to save and apply the configuration.
+</small>
+	</div>
+		</div>
+
+
+<script type="text/javascript" id="cbip-wireless-wlan10-channel">
+		
+		cbi_d_add("cbi-wireless-wlan10-channel", {"cbid.wireless.wlan10.hwmode":"11a"}, "cbip-wireless-wlan10-channel");cbi_d_add("cbi-wireless-wlan10-channel", {"cbid.wireless.wlan10.htbw1":"auto"}, "cbip-wireless-wlan10-channel");cbi_d_add("cbi-wireless-wlan10-channel", {"cbid.wireless.wlan10.htbw1":"ht20"}, "cbip-wireless-wlan10-channel");cbi_d_add("cbi-wireless-wlan10-channel", {"cbid.wireless.wlan10.htbw2":"auto"}, "cbip-wireless-wlan10-channel");cbi_d_add("cbi-wireless-wlan10-channel", {"cbid.wireless.wlan10.htbw2":"ht20"}, "cbip-wireless-wlan10-channel");cbi_d_add("cbi-wireless-wlan10-channel", {"cbid.wireless.wlan10.htbw3":"auto"}, "cbip-wireless-wlan10-channel");cbi_d_add("cbi-wireless-wlan10-channel", {"cbid.wireless.wlan10.htbw3":"ht20"}, "cbip-wireless-wlan10-channel");
+	</script>
+
+<script type="text/javascript">//<![CDATA[
+function wireless_update_channel_channel(value) {
+	if (parseInt(value) > 48 && parseInt(value) < 149) {
+		$("[id='cbid.wireless.wlan10.channel']").next().show();
+	} else {
+		$("[id='cbid.wireless.wlan10.channel']").next().hide();
+	}
+
+	cbi_d_update();
+}
+wireless_update_channel_channel("0");
+//]]></script><div class="form-group" id="cbi-wireless-wlan10-channel2"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.channel2">Channel</label>
+		<div class="col-sm-5">
+
+<select class="form-control" onchange="wireless_update_channel2_channel(this.value)" id="cbid.wireless.wlan10.channel2" name="cbid.wireless.wlan10.channel2">
+<option  value="0" selected="selected">Auto</option><option  value="36">36 (5180 MHz)</option><option  value="40">40 (5200 MHz)</option><option  value="44">44 (5220 MHz)</option><option  value="48">48 (5240 MHz)</option><option  value="52">52 (5260 MHz)</option><option  value="56">56 (5280 MHz)</option><option  value="60">60 (5300 MHz)</option><option  value="64">64 (5320 MHz)</option><option  value="100">100 (5500 MHz)</option><option  value="104">104 (5520 MHz)</option><option  value="108">108 (5540 MHz)</option><option  value="112">112 (5560 MHz)</option><option  value="116">116 (5580 MHz)</option><option  value="120">120 (5600 MHz)</option><option  value="124">124 (5620 MHz)</option><option  value="128">128 (5640 MHz)</option><option  value="132">132 (5660 MHz)</option><option  value="136">136 (5680 MHz)</option>
+</select>
+<small class="text-danger"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Your configuration involves the DFS band, in order to meet the usage requirements of the DFS band, the system startup time may be much longer than normal startup time. Please confirm if you want to save and apply the configuration.
+</small>
+	</div>
+		</div>
+
+
+<script type="text/javascript" id="cbip-wireless-wlan10-channel2">
+		
+		cbi_d_add("cbi-wireless-wlan10-channel2", {"cbid.wireless.wlan10.htbw1":"ht40"}, "cbip-wireless-wlan10-channel2");cbi_d_add("cbi-wireless-wlan10-channel2", {"cbid.wireless.wlan10.htbw2":"ht40"}, "cbip-wireless-wlan10-channel2");cbi_d_add("cbi-wireless-wlan10-channel2", {"cbid.wireless.wlan10.htbw3":"ht40"}, "cbip-wireless-wlan10-channel2");
+	</script>
+
+<script type="text/javascript">//<![CDATA[
+function wireless_update_channel2_channel(value) {
+	if (parseInt(value) > 48 && parseInt(value) < 149) {
+		$("[id='cbid.wireless.wlan10.channel2']").next().show();
+	} else {
+		$("[id='cbid.wireless.wlan10.channel2']").next().hide();
+	}
+
+	cbi_d_update();
+}
+wireless_update_channel2_channel("0");
+//]]></script><div class="form-group" id="cbi-wireless-wlan10-channel3"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.channel3">Channel</label>
+		<div class="col-sm-5">
+
+<select class="form-control" onchange="wireless_update_channel3_channel(this.value)" id="cbid.wireless.wlan10.channel3" name="cbid.wireless.wlan10.channel3">
+<option  value="0" selected="selected">Auto</option><option  value="36">36 (5180 MHz)</option><option  value="40">40 (5200 MHz)</option><option  value="44">44 (5220 MHz)</option><option  value="48">48 (5240 MHz)</option><option  value="52">52 (5260 MHz)</option><option  value="56">56 (5280 MHz)</option><option  value="60">60 (5300 MHz)</option><option  value="64">64 (5320 MHz)</option><option  value="100">100 (5500 MHz)</option><option  value="104">104 (5520 MHz)</option><option  value="108">108 (5540 MHz)</option><option  value="112">112 (5560 MHz)</option><option  value="116">116 (5580 MHz)</option><option  value="120">120 (5600 MHz)</option><option  value="124">124 (5620 MHz)</option><option  value="128">128 (5640 MHz)</option>
+</select>
+<small class="text-danger"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Your configuration involves the DFS band, in order to meet the usage requirements of the DFS band, the system startup time may be much longer than normal startup time. Please confirm if you want to save and apply the configuration.
+</small>
+	</div>
+		</div>
+
+
+<script type="text/javascript" id="cbip-wireless-wlan10-channel3">
+		
+		cbi_d_add("cbi-wireless-wlan10-channel3", {"cbid.wireless.wlan10.htbw2":"ht80"}, "cbip-wireless-wlan10-channel3");cbi_d_add("cbi-wireless-wlan10-channel3", {"cbid.wireless.wlan10.htbw3":"ht80"}, "cbip-wireless-wlan10-channel3");
+	</script>
+
+<script type="text/javascript">//<![CDATA[
+function wireless_update_channel3_channel(value) {
+	if (parseInt(value) > 48 && parseInt(value) < 149) {
+		$("[id='cbid.wireless.wlan10.channel3']").next().show();
+	} else {
+		$("[id='cbid.wireless.wlan10.channel3']").next().hide();
+	}
+
+	cbi_d_update();
+}
+wireless_update_channel3_channel("0");
+//]]></script><div class="form-group" id="cbi-wireless-wlan10-channel4"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.channel4">Channel</label>
+		<div class="col-sm-5">
+
+<select class="form-control" onchange="wireless_update_channel4_channel(this.value)" id="cbid.wireless.wlan10.channel4" name="cbid.wireless.wlan10.channel4">
+<option  value="0" selected="selected">Auto</option><option  value="36">36 (5180 MHz)</option><option  value="40">40 (5200 MHz)</option><option  value="44">44 (5220 MHz)</option><option  value="48">48 (5240 MHz)</option><option  value="52">52 (5260 MHz)</option><option  value="56">56 (5280 MHz)</option><option  value="60">60 (5300 MHz)</option><option  value="64">64 (5320 MHz)</option><option  value="100">100 (5500 MHz)</option><option  value="104">104 (5520 MHz)</option><option  value="108">108 (5540 MHz)</option><option  value="112">112 (5560 MHz)</option><option  value="116">116 (5580 MHz)</option><option  value="120">120 (5600 MHz)</option><option  value="124">124 (5620 MHz)</option><option  value="128">128 (5640 MHz)</option>
+</select>
+<small class="text-danger"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Your configuration involves the DFS band, in order to meet the usage requirements of the DFS band, the system startup time may be much longer than normal startup time. Please confirm if you want to save and apply the configuration.
+</small>
+	</div>
+		</div>
+
+
+<script type="text/javascript" id="cbip-wireless-wlan10-channel4">
+		
+		cbi_d_add("cbi-wireless-wlan10-channel4", {"cbid.wireless.wlan10.htbw2":"ht160"}, "cbip-wireless-wlan10-channel4");cbi_d_add("cbi-wireless-wlan10-channel4", {"cbid.wireless.wlan10.htbw3":"ht160"}, "cbip-wireless-wlan10-channel4");
+	</script>
+
+<script type="text/javascript">//<![CDATA[
+function wireless_update_channel4_channel(value) {
+	if (parseInt(value) > 48 && parseInt(value) < 149) {
+		$("[id='cbid.wireless.wlan10.channel4']").next().show();
+	} else {
+		$("[id='cbid.wireless.wlan10.channel4']").next().hide();
+	}
+
+	cbi_d_update();
+}
+wireless_update_channel4_channel("0");
+//]]></script><div class="form-group" id="cbi-wireless-wlan10-txpower"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.txpower">Transmit Power</label>
+		<div class="col-sm-5">
+
+
+	<select class="form-control" onchange="cbi_d_update(this.id)" id="cbid.wireless.wlan10.txpower" name="cbid.wireless.wlan10.txpower">
+	<option  id="cbi-wireless-wlan10-txpower-100" value="100" selected="selected">Maximum</option><option  id="cbi-wireless-wlan10-txpower-20" value="20">Middle</option><option  id="cbi-wireless-wlan10-txpower-5" value="5">Minimum</option>
+	</select>
+
+	</div>
+		</div>
+
+
+
+
+<div class="form-group" id="cbi-wireless-wlan10-maxstanum"><label class="col-sm-4 control-label" for="cbid.wireless.wlan10.maxstanum">Max Stations</label>
+		<div class="col-sm-5">
+<input type="text"class="form-control uinteger"
+	 name="cbid.wireless.wlan10.maxstanum" id="cbid.wireless.wlan10.maxstanum" value="" range="[1,512]" /></div>
+	<div class="col-sm-3 hidden-xs">
+	<label class="form-control-static" for="cbid.wireless.wlan10.maxstanum"" style="white-space:nowrap;">(Optional)</label>	</div>
+		</div>
+
+
+
+
+
+			
+
+<!-- /nsection -->
+
+
+<div>
+<div class="form-group">
+		<div class="col-sm-offset-4 col-sm-5">
+		
+			<button class="btn btn-block btn-primary" type="submit" name="cbi.apply">Save & Apply</button>
+		
+			<button class="btn btn-block btn-primary hidden" type="button" disabled=true>Please Wait...</button>
 		</div>
 	</div>
-
-	<div class="modal fade" id="cbi-modal-apply" tabindex="-1" role="dialog" aria-labelledby="cbi-modal-apply-label" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-body">
-					<div class="row clearfix text-center text-primary">
-						<i class="fa fa-spinner fa-pulse fa-4x"></i>
-						<span>Configuration applied.</span>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<footer class="footer hidden-xs navbar-fixed-bottom">
-		<div class="container text-muted text-center">
-			<span>Copyright <i class="fa fa-copyright"></i> 2025 Shenzhen Cudy Technology Co., Ltd.</span>
-			<span>&nbsp;|&nbsp;</span>
-			<span>HW: AP3000D V1.0</span>
-			<span>&nbsp;|&nbsp;</span>
-			<span>FW: 2.3.13-20250228-172158
-</span>
-			<span>&nbsp;|&nbsp;</span>
-			<span><a href="http://www.cudy.com" target="_blank" style="color:#777">www.cudy.com</a></span>
-			<span>&nbsp;|&nbsp;</span>
-			<span><a href="mailto:support@cudy.com" target="_top" style="color:#777">support@cudy.com</a></span>
-		</div>
-	</footer>
-	
-		
-	<footer class="navbar navbar-default navbar-fixed-bottom visible-xs" role="navigation" style="text-align: center;">
-		<div class="container">
-			<ul class="nav nav-pills" style="display: inline-block;float: none;">
-				<li ><a href="/emulator/AP3000D/cgi-bin/luci/"><i class="icon icon-status"></i>&thinsp;System</a></li>
-				
-				<li ><a href="/emulator/AP3000D/cgi-bin/luci/admin/wizard"><i class="fa fa-rocket"></i>&thinsp;Wizard</a></li>
-				
-				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i>&thinsp;Settings <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-					
-						<li><a href="/emulator/AP3000D/cgi-bin/luci/admin/setup?active=wireless_multi_ssid"><i class="icon icon-wifi"></i>&nbsp;&nbsp;Wireless</a></li>
-						<li class="divider"></li>
-					
-						<li><a href="/emulator/AP3000D/cgi-bin/luci/admin/setup?active=portal"><i class="icon icon-portal"></i>&nbsp;&nbsp;Captive Portal</a></li>
-						<li class="divider"></li>
-					
-						<li><a href="/emulator/AP3000D/cgi-bin/luci/admin/setup?active=autoupgrade"><i class="icon icon-sysupgrade"></i>&nbsp;&nbsp;Firmware</a></li>
-						<li class="divider"></li>
-					
-					
-					<li><a href="/emulator/AP3000D/cgi-bin/luci/admin/panel"><i class="icon icon-advanced"></i>&nbsp;&nbsp;Advanced</a></li>
-					<li class="divider"></li>
-					<li><a href="/emulator/AP3000D/cgi-bin/luci/admin/tools"><i class="icon icon-tools"></i>&nbsp;&nbsp;Diagnostic Tools</a></li>
-				</ul>
-				</li>
-			</ul>
-		</div>
-	</footer>
-		
-	
-</body>
-
-</html>
-
+	<script type="text/javascript">
+		$("[data-toggle='popover']").popover();
+		cbi_d_update();
+		cbi_init_message("Do you want to leave this page? Your changes may not be saved.");
+	</script>
+</form>

@@ -2,7 +2,7 @@ import pytest
 
 from custom_components.hass_cudy_router.api import CudyApi
 from custom_components.hass_cudy_router.const import *
-from tests.cudy_router.fixtures import read_html, html_exists, FakeClient
+from tests.cudy_router.fixtures import FakeClient
 
 
 @pytest.mark.asyncio

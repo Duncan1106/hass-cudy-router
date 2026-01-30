@@ -2,76 +2,89 @@ from __future__ import annotations
 
 import asyncio
 import json
+from pathlib import Path
 from typing import Dict, List
-from urllib.parse import unquote, urljoin
+from urllib.parse import unquote
 
 import requests
 import urllib3
 from bs4 import BeautifulSoup
-from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
 from custom_components.hass_cudy_router.const import *
 
 
-
 URLS = {
     MODULE_SYSTEM: [
+        "/admin/system/status",
         "/admin/system/status/detail/1",
     ],
     MODULE_LAN: [
+        "/admin/network/lan/status",
         "/admin/network/lan/status/detail/1",
-        "/admin/network/lan"
     ],
     MODULE_DHCP: [
+        "/admin/services/dhcp/status",
         "/admin/services/dhcp/status/detail/1",
     ],
     MODULE_DEVICES: [
+        "/admin/network/devices/status",
         "/admin/network/devices/status/detail/1",
     ],
+    MODULE_DEVICE_LIST: [
+        "/admin/network/devices/devlist",
+        "/admin/network/devices/devlist/detail/1",
+    ],
     MODULE_WAN: [
-        "/admin/network/wan/iface/wan/status/detail/1",
+        "/admin/network/wan/status",
+        "/admin/network/wan/iface/wan/status",
         "/admin/network/wan/status/detail/1",
+        "/admin/network/wan/iface/wan/status/detail/1",
     ],
     MODULE_WAN_SECONDARY: [
+        "/admin/network/wan/iface/wand/status",
         "/admin/network/wan/iface/wand/status/detail/1",
     ],
     MODULE_MULTI_WAN: [
+        "/admin/network/mwan3/status",
         "/admin/network/mwan3/status/detail/1",
     ],
     MODULE_MESH: [
+        "/admin/network/mesh/status",
         "/admin/network/mesh/status/detail/1",
     ],
     MODULE_VPN: [
-        "/admin/network/vpn/status/detail/1",
-    ],
-    MODULE_WIRELESS_5G: [
-        "/admin/network/wireless/status/detail/1/iface/wlan10",
-        "/admin/network/wireless/iface/wlan10",
-        "/admin/network/wireless/config/multi_ssid_config/embedded/iface/wlan10"
-    ],
-    MODULE_WIRELESS_24G: [
-        "/admin/network/wireless/status/detail/1/iface/wlan00",
-        "/admin/network/wireless/iface/wlan10",
-        "/admin/network/wireless/config/multi_ssid_config/embedded/iface/wlan00"
-    ],
-    MODULE_WIRELESS_6G: [
-        "/admin/network/wireless/status/detail/1/iface/wlan20",
-        "/admin/network/wireless/iface/wlan20"
+        "/admin/network/vpn/pptp/status",
+        "/admin/network/vpn/pptp/status/detail/1",
     ],
     MODULE_GSM: [
-        "/admin/network/gcom/iface/4g/status/detail/1"
+        "/admin/network/gcom/status",
+        "/admin/network/gcom/iface/4g/status",
+        "/admin/network/gcom/iface/4g/status/detail/1",
     ],
     MODULE_SMS: [
+        "/admin/network/gcom/sms/status",
+        "/admin/network/gcom/sms/iface/4g/status",
         "/admin/network/gcom/sms/iface/4g/status/detail/1",
     ],
+    MODULE_WIRELESS_24G: [
+        "/admin/network/wireless/status/iface/wlan00",
+        "/admin/network/wireless/status/detail/1/iface/wlan00",
+    ],
+    MODULE_WIRELESS_5G: [
+        "/admin/network/wireless/status/iface/wlan10",
+        "/admin/network/wireless/status/detail/1/iface/wlan10",
+    ],
+    MODULE_WIRELESS_6G: [
+        "/admin/network/wireless/status/iface/wlan20",
+        "/admin/network/wireless/status/detail/1/iface/wlan20",
+    ],
     MODULE_USB: [
+        "/admin/services/usb/status",
         "/admin/services/usb/status/detail/1",
     ],
-    MODULE_DEVICE_LIST: [
-        "/admin/network/devices/devlist/detail/1",
-    ],
 }
+
 
 urllib3.disable_warnings()
 
@@ -111,7 +124,14 @@ def _extract_more_detail_from_dom(html: str, base_url: str) -> Dict[str, str]:
     sections: Dict[str, str] = {}
 
     # candidate link texts to match (lowercase)
-    candidates = {"more detail", "more details", "more", "więcej", "więcej szczegółów", "más detalles"}
+    candidates = {
+        "more detail",
+        "more details",
+        "more",
+        "więcej",
+        "więcej szczegółów",
+        "más detalles",
+    }
 
     for panel in soup.select("div.panel"):
         title_el = panel.select_one("div.panel-heading h3")
@@ -213,8 +233,8 @@ def _ensure_detail_1(url: str) -> str:
 
 
 def download_emulator_module_pages(
-        out_root: str = "cudy_router/html",
-        timeout: int = 20,
+    out_root: str = "cudy_router/html",
+    timeout: int = 20,
 ) -> dict[str, dict[str, str]]:
     base_out = Path(out_root)
     base_out.mkdir(parents=True, exist_ok=True)
@@ -232,7 +252,13 @@ def download_emulator_module_pages(
         results[model] = {}
 
         for module, paths in URLS.items():
+            # ensure uniqueness even if someone accidentally adds duplicates later
+            seen: set[str] = set()
             for path in paths:
+                if path in seen:
+                    continue
+                seen.add(path)
+
                 base_url = f"https://support.cudy.com/emulator/{model}/cgi-bin/luci/"
                 rel_path = path.lstrip("/")
                 url = _ensure_detail_1(urljoin(base_url, rel_path))
@@ -259,6 +285,101 @@ def download_emulator_module_pages(
     return results
 
 
+# Add this to devices.py (or a helper module)
+
+import re
+from urllib.parse import urljoin
+
+_CBI_XHR_RE = re.compile(
+    r"cbi_xhr_load\(\s*\"(?P<selector>[^\"]+)\"\s*,\s*\"(?P<mode>[^\"]+)\"\s*,\s*\"(?P<url>[^\"]+)\"\s*,\s*\"(?P<params>[^\"]*)\"\s*\)"
+)
+
+
+def get_emulator_xhr_links(device_code: str, timeout: int = 20) -> list[dict[str, str]]:
+    """Fetch the emulator landing page and extract cbi_xhr_load() endpoints.
+
+    Returns a list of dicts with:
+      - selector: DOM target selector (e.g. '#status-wan')
+      - mode: XHR mode ('poll'/'get')
+      - url: absolute URL to the XHR endpoint
+      - params: query-string payload passed as the 4th argument (e.g. 'iface=wlan00')
+
+    Example page:
+      https://support.cudy.com/emulator/P5/cgi-bin/luci/
+
+    Note: the XHR url in the page is often prefixed with '/emulator/<MODEL>/',
+    so we normalize it to an absolute URL under https://support.cudy.com.
+    """
+
+    base_page = f"https://support.cudy.com/emulator/{device_code}/cgi-bin/luci/"
+    resp = requests.get(base_page, timeout=timeout)
+    resp.raise_for_status()
+
+    soup = BeautifulSoup(resp.text, "html.parser")
+
+    # Collect script bodies (some are inline, some may be minified)
+    scripts_text: list[str] = []
+    for s in soup.find_all("script"):
+        if s.string and "cbi_xhr_load" in s.string:
+            scripts_text.append(s.string)
+        elif s.get_text() and "cbi_xhr_load" in s.get_text():
+            scripts_text.append(s.get_text())
+
+    out: list[dict[str, str]] = []
+    seen: set[tuple[str, str, str, str]] = set()
+
+    site_root = "https://support.cudy.com"
+
+    for text in scripts_text:
+        for m in _CBI_XHR_RE.finditer(text):
+            selector = m.group("selector")
+            mode = m.group("mode")
+            url = m.group("url")
+            params = m.group("params")
+
+            # Normalize URL
+            # - If it starts with '/', treat it as site-root relative
+            # - If it's relative, join with the page base
+            if url.startswith("/"):
+                abs_url = urljoin(site_root, url)
+            else:
+                abs_url = urljoin(base_page, url)
+
+            key = (selector, mode, abs_url, params)
+            if key in seen:
+                continue
+            seen.add(key)
+
+            out.append(
+                {
+                    "selector": selector,
+                    "mode": mode,
+                    "url": abs_url,
+                    "params": params,
+                }
+            )
+
+    return out
+
+
+# Optional: convenience mapping by "status-*" module id (derived from selector)
+
+def get_emulator_xhr_links_map(device_code: str, timeout: int = 20) -> dict[str, dict[str, str]]:
+    """Return dict keyed by selector (e.g. '#status-wan') -> payload dict."""
+    links = get_emulator_xhr_links(device_code=device_code, timeout=timeout)
+    return {item["selector"]: item for item in links}
+
+
+
 if __name__ == "__main__":
     saved = download_emulator_module_pages(out_root="cudy_router/html")
     print(json.dumps(saved, indent=2))
+
+    # for model in CUDY_DEVICES:
+    #     print(f"{model}:")
+    #     links = get_emulator_xhr_links(model)
+    #     prefix = f"https://support.cudy.com/emulator/{model}/cgi-bin/luci"
+    #     for x in links:
+    #         # Show the endpoint path relative to the model's luci root and its params
+    #         rel = x["url"].replace(prefix, "")
+    #         print(rel, x["params"])
