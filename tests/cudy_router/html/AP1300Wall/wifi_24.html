@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>AP1300-Wall</title>
+
+  <link rel="icon" href="/emulator/AP1300Wall/luci-static/light/img/favicon.ico">
+
+  <link rel="stylesheet" href="/emulator/AP1300Wall/luci-static/light/css/bootstrap.min.css?v=git-25.107.03586-120b6a8">
+  <link rel="stylesheet" href="/emulator/AP1300Wall/luci-static/light/css/font-awesome.min.css?v=git-25.107.03586-120b6a8">
+  <link rel="stylesheet" href="/emulator/AP1300Wall/luci-static/light/css/flatpickr.min.css?v=git-25.107.03586-120b6a8">
+  <link rel="stylesheet" href="/emulator/AP1300Wall/luci-static/light/css/iconfont.css?v=git-25.107.03586-120b6a8">
+  <link rel="stylesheet" href="/emulator/AP1300Wall/luci-static/light/css/setup.css?v=git-25.107.03586-120b6a8">
+
+  <script src="/emulator/AP1300Wall/luci-static/light/js/jquery.min.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/bootstrap.min.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/jquery.validate.min.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/additional-methods.min.js?v=git-25.107.03586-120b6a8"></script>
+  
+  <script src="/emulator/AP1300Wall/luci-static/light/js/flatpickr.min.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/echarts.min.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/macarons.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/sha256.min.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/cbi.js?v=git-25.107.03586-120b6a8"></script>
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
+  <!--[if lt IE 9]>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/html5shiv.min.js?v=git-25.107.03586-120b6a8"></script>
+  <script src="/emulator/AP1300Wall/luci-static/light/js/respond.min.js?v=git-25.107.03586-120b6a8"></script>
+  <![endif]-->
+ </head>
+
+<body>
+
+<nav class="navbar" role="navigation">
+<div class="navbar-inverse navbar-static-top">
+	<div class="container">
+		<embed style="width:88px; height:69px;" src="/emulator/AP1300Wall/luci-static/resources/logo.svg?v=git-25.107.03586-120b6a8" />
+	</div>
+</div>
+
+<nav class="navbar-default navbar-static-top">
+	<div class="container-fluid">
+		<ul class="nav navbar-nav navbar-left hidden-xs">
+			<li ><a href="/emulator/AP1300Wall/cgi-bin/luci/"><h4>&nbsp;&nbsp;<i class="icon icon-status"></i>&nbsp;System Status&nbsp;&nbsp;</h4></a></li>
+			
+			<li ><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/wizard"><h4>&nbsp;&nbsp;<i class="fa fa-rocket"></i>&nbsp;Quick Setup&nbsp;&nbsp;</h4></a></li>
+			
+			<li ><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/setup"><h4>&nbsp;&nbsp;<i class="fa fa-cog"></i>&nbsp;General Settings&nbsp;&nbsp;</h4></a></li>
+			
+			<li ><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/panel"><h4>&nbsp;&nbsp;<i class="icon icon-advanced"></i>&nbsp;Advanced Settings&nbsp;&nbsp;</h4></a></li>
+			<li ><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/tools"><h4>&nbsp;&nbsp;<i class="icon icon-tools"></i>&nbsp;Diagnostic Tools&nbsp;&nbsp;</h4></a></li>
+		</ul>
+	</div>
+</nav>
+
+</nav>
+
+<noscript>
+	<div class="alert-message warning">
+		<strong>JavaScript required!</strong><br />
+		You must enable JavaScript in your browser or LuCI will not work properly.
+	</div>
+</noscript>
+
+<div class="container">
+
+
+<style type="text/css">
+@media screen and (max-width: 767px) {
+	.col-sm-10 {
+		position: relative;
+		min-height: 1px;
+		padding-right: 0px;
+		padding-left: 0px;
+	}
+}
+</style>
+<div data-show="statuspage"></div>
+<h4><ul class="breadcrumb">
+	<li><a href="/emulator/AP1300Wall/cgi-bin/luci/"><i class="icon icon-status"></i>&nbsp;System Status</a></li>
+	<li class="active"><i class="icon icon-wifi"></i>&nbsp;&nbsp;Wireless 5G</li>
+</ul></h4>
+
+<ul class="nav nav-pills visible-xs">
+	
+		                                                                               
+			<li class="active"><a href="#tab-status-1" data-toggle="tab">Status</a></li>
+		                                                                               
+			<li ><a href="#tab-status-2" data-toggle="tab">Settings</a></li>
+		
+	
+</ul>
+<div class="visible-xs"><br /></div>
+<div class="col-sm-2 text-center">
+<ul class="nav nav-tabs nav-pills nav-stacked hidden-xs">
+	
+		<li class="active"><a href="#tab-status-1" data-toggle="tab">Status</a></li>
+	
+		<li ><a href="#tab-status-2" data-toggle="tab">Settings</a></li>
+	
+</ul>
+</div>
+<div class="col-sm-10">
+
+<div class="tab-content">
+	
+		<div class="tab-pane fade in active" id="tab-status-1">
+			<div class="text-center" style="height:180px">
+				<br/><br /><br />
+				<i class="fa fa-spinner fa-pulse fa-2x text-primary"></i>
+			</div>
+		</div>
+		<script type="text/javascript">cbi_xhr_load("#tab-status-1", "poll", "/emulator/AP1300Wall/cgi-bin/luci/admin/network/wireless/multi_ssid_status", "detail=1&iface=wlan10");</script>
+	
+		<div class="tab-pane fade " id="tab-status-2">
+			<div class="text-center" style="height:180px">
+				<br/><br /><br />
+				<i class="fa fa-spinner fa-pulse fa-2x text-primary"></i>
+			</div>
+		</div>
+		<script type="text/javascript">cbi_xhr_load("#tab-status-2", "get", "/emulator/AP1300Wall/cgi-bin/luci/admin/network/wireless/config", "nomodal=&iface=multissid");</script>
+	
+</div>
+
+</div>
+
+
+<script type="text/javascript">//<![CDATA[
+$(document).ready(function() {
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		$(window).resize();
+	});
+});
+//]]></script>
+
+
+<div class="visible-xs"><p> <br /><br /></p></div>
+</div>
+	<div class="modal fade" id="cbi-modal" tabindex="-1" role="dialog" aria-labelledby="cbi-modal-label" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body" style="height:300px">
+					<div class="row clearfix text-center">
+						<br/><br /><br /><br /><br />
+						<i class="fa fa-spinner fa-pulse fa-2x text-primary"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="cbi-modal-apply" tabindex="-1" role="dialog" aria-labelledby="cbi-modal-apply-label" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="row clearfix text-center text-primary">
+						<i class="fa fa-spinner fa-pulse fa-4x"></i>
+						<span>Configuration applied.</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<footer class="footer hidden-xs navbar-fixed-bottom">
+		<div class="container text-muted text-center">
+			<span>Copyright <i class="fa fa-copyright"></i> 2025 Shenzhen Cudy Technology Co., Ltd.</span>
+			<span>&nbsp;|&nbsp;</span>
+			<span>HW: AP1300-Wall V1.0</span>
+			<span>&nbsp;|&nbsp;</span>
+			<span>FW: 2.3.13-20250417-091338
+</span>
+			<span>&nbsp;|&nbsp;</span>
+			<span><a href="http://www.cudy.com" target="_blank" style="color:#777">www.cudy.com</a></span>
+			<span>&nbsp;|&nbsp;</span>
+			<span><a href="mailto:support@cudy.com" target="_top" style="color:#777">support@cudy.com</a></span>
+		</div>
+	</footer>
+	
+		
+	<footer class="navbar navbar-default navbar-fixed-bottom visible-xs" role="navigation" style="text-align: center;">
+		<div class="container">
+			<ul class="nav nav-pills" style="display: inline-block;float: none;">
+				<li ><a href="/emulator/AP1300Wall/cgi-bin/luci/"><i class="icon icon-status"></i>&thinsp;System</a></li>
+				
+				<li ><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/wizard"><i class="fa fa-rocket"></i>&thinsp;Wizard</a></li>
+				
+				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i>&thinsp;Settings <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+					
+						<li><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/setup?active=wireless_multi_ssid"><i class="icon icon-wifi"></i>&nbsp;&nbsp;Wireless</a></li>
+						<li class="divider"></li>
+					
+						<li><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/setup?active=portal"><i class="icon icon-portal"></i>&nbsp;&nbsp;Captive Portal</a></li>
+						<li class="divider"></li>
+					
+						<li><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/setup?active=autoupgrade"><i class="icon icon-sysupgrade"></i>&nbsp;&nbsp;Firmware</a></li>
+						<li class="divider"></li>
+					
+					
+					<li><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/panel"><i class="icon icon-advanced"></i>&nbsp;&nbsp;Advanced</a></li>
+					<li class="divider"></li>
+					<li><a href="/emulator/AP1300Wall/cgi-bin/luci/admin/tools"><i class="icon icon-tools"></i>&nbsp;&nbsp;Diagnostic Tools</a></li>
+				</ul>
+				</li>
+			</ul>
+		</div>
+	</footer>
+		
+	
+</body>
+
+</html>
+
