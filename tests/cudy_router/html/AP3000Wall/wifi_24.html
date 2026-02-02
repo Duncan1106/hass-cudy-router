@@ -1,0 +1,268 @@
+<form class="form-horizontal" role="form" method="post" name="cbi" action="/emulator/AP3000Wall/cgi-bin/luci/admin/network/wireless/config/multi_ssid_config?embedded=&iface=wlan00" enctype="multipart/form-data" onkeydown="if(event.keyCode==13){return false;}">
+	<div>
+		<input type="hidden" name="token" value="93b3c044a7f70c20591e46802f32012b" />
+		<input type="hidden" name="timeclock" value="" />
+		<input type="hidden" name="cbi.submit" value="1" />
+		<input type="password" class="sr-only">
+	</div>
+
+
+
+<div>
+	
+		<br />
+	
+		
+		
+		
+			
+			
+
+<!-- /nsection -->
+
+<script type="text/javascript">//<![CDATA[
+	$(function() {
+		$("input").keypress(function (e) {
+			var keyCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
+			if (keyCode == 13) {
+				for (var i = 0; i < this.form.elements.length; i++) {
+					if (this == this.form.elements[i]) break;
+				}
+				i = (i + 1) % this.form.elements.length;
+				this.form.elements[i].focus();
+				return false;
+			} else {
+				return true;
+			}
+		});
+	});
+
+//]]></script>
+<!-- tblsection -->
+<legend>SSID</legend><div class="table-responsive">
+<table class="table table-striped">
+	<thead>
+	<tr><th>SSID</th><th>Encryption</th><th>Hidden Network</th><th>Separate Clients</th><th>SSID Isolation</th><th>Enable</th><th>Modify</th></tr>
+	</thead>
+	<tbody>
+	<tr class="cbi-section-table-descr"></tr><tr id="cbi-wireless-wlan00" ondragstart="drag_start(event);" ondragend="drag_end(event);" ondragenter="drag_enter(event);" ondragleave="drag_leave(event);" ondrop="drag_drop(event);" ondragover="drag_over(event);"  data-sid="wlan00" data-store="cbi.sts.wireless.wifi-iface">
+		<td><div id="cbi-wireless-wlan00-ssid">
+
+
+
+
+	<p class="form-control-static hidden-xs">Cudy-6E05</p>
+	<p class="visible-xs">Cudy-6E05</p>
+
+
+</div>
+<div id="cbip-wireless-wlan00-ssid"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan00-encryption">
+
+
+
+
+	<p class="form-control-static hidden-xs">No Encryption</p>
+	<p class="visible-xs">No Encryption</p>
+
+
+</div>
+<div id="cbip-wireless-wlan00-encryption"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan00-hidden">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan00-hidden"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan00-isolate">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan00-isolate"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan00-ssid_isolation">
+
+
+
+
+	<p class="form-control-static hidden-xs">Disabled</p>
+	<p class="visible-xs">Disabled</p>
+
+
+</div>
+<div id="cbip-wireless-wlan00-ssid_isolation"></div>
+</td>
+
+
+
+<td><div id="cbi-wireless-wlan00-disabled">
+
+
+	<input type="hidden" value="1" name="cbi.cbe.wireless.wlan00.disabled" />
+	<input type="hidden" id="cbid.wireless.wlan00.disabled" name="cbid.wireless.wlan00.disabled" value="0" />
+
+	
+			<i class="fa fa-toggle-on  fa-2x text-primary" 
+			   onclick="if (this.classList.contains('fa-toggle-off')) { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000Wall/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan00'); 
+			   	
+			   } else { 
+			   	
+			   		cbi_switch_toggle(this, true, '/emulator/AP3000Wall/cgi-bin/luci/admin/network/wireless/config/action_ssid_disable_toggle/iface/wlan00');
+			   	
+			   }"></i>
+			
+	
+
+	<i class="fa fa-spinner fa-2x fa-pulse text-primary hidden"></i>
+</div>
+<div id="cbip-wireless-wlan00-disabled"></div>
+</td>
+
+
+
+<td nowrap="nowrap"><button class="btn btn-link" type="submit" onclick='cbi_show_modal(this, "/emulator/AP3000Wall/cgi-bin/luci/admin/network/wireless/config/multi_ssid_add_edit_ssid/wlan00");return false;'  data-action="modal"><i class="fa fa-edit fa-lg"></i></button>
+			<button class="btn btn-link"  data-action="modal" type="submit" onclick="cbi_disabled_validate('cbid.wireless.wlan00');this.form.cbi_state='del-section'; return true" name="cbi.rts.wireless.wlan00" alt="Delete"><i class="fa fa-trash-o fa-lg"></i></button>
+			<button class="btn btn-link hidden" type="button" disabled=true><i class="fa fa-spinner fa-pulse fa-lg"></i> Delete</button></td></tr></tbody>
+</table>
+</div>
+<div class="form-group">
+		
+		<div class="col-xs-12">
+			<button class="btn btn-success"  data-action="modal" type="submit" name="cbi.cts.wireless.wifi-iface.wlan00"><i class="fa fa-plus-circle fa-lg"></i> Add</button>
+			<button class="btn btn-success hidden" type="button" disabled=true><i class="fa fa-spinner fa-pulse fa-lg"></i> Please Wait...</button>
+		</div>
+		
+	</div><!-- /tblsection -->
+		<h4 class="page-header">Advanced Settings</h4>
+		
+		
+			<div class="form-group" id="cbi-wireless-wlan00-hwmode"><label class="col-sm-4 control-label" for="cbid.wireless.wlan00.hwmode">Mode</label>
+		<div class="col-sm-5">
+
+<select class="form-control" onchange="wireless_update_hwmode_2g(this.value)" id="cbid.wireless.wlan00.hwmode" name="cbid.wireless.wlan00.hwmode">
+<option  value="11bgnax" selected="selected">2.4GHz (802.11b+g+n+ax)</option><option  value="11bgn">2.4GHz (802.11b+g+n)</option><option  value="11bg">2.4GHz (802.11b+g)</option><option  value="11b">2.4GHz (802.11b)</option>
+</select>
+<small class="text-danger"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> If you find that some clients have problems connecting to 2.4GHz WiFi, please update the client&#39;s wireless network card driver to the latest version. If still have problems, please adjust the wireless mode of the router to 2.4GHz (802.11b+g+n).
+</small>
+	</div>
+		</div>
+
+
+
+
+<script type="text/javascript">//<![CDATA[
+function wireless_update_hwmode_2g(value) {
+	if (value.includes("11bgnax"))  {
+		$("[id='cbid.wireless.wlan00.hwmode']").next().show();
+	} else {
+		$("[id='cbid.wireless.wlan00.hwmode']").next().hide();
+	}
+
+	cbi_d_update();
+}
+wireless_update_hwmode_2g("11bgnax");
+//]]></script><div class="form-group" id="cbi-wireless-wlan00-htbw"><label class="col-sm-4 control-label" for="cbid.wireless.wlan00.htbw">Channel Width</label>
+		<div class="col-sm-5">
+
+
+	<select class="form-control" onchange="cbi_d_update(this.id)" id="cbid.wireless.wlan00.htbw" name="cbid.wireless.wlan00.htbw">
+	<option  id="cbi-wireless-wlan00-htbw-auto" value="auto" selected="selected">Auto</option><option  id="cbi-wireless-wlan00-htbw-ht20" value="ht20">20 MHz</option><option  id="cbi-wireless-wlan00-htbw-ht40" value="ht40">40 MHz</option>
+	</select>
+
+	</div>
+		</div>
+
+
+<script type="text/javascript" id="cbip-wireless-wlan00-htbw">
+		
+		cbi_d_add("cbi-wireless-wlan00-htbw", {"cbid.wireless.wlan00.hwmode":"11bgnax"}, "cbip-wireless-wlan00-htbw");cbi_d_add("cbi-wireless-wlan00-htbw", {"cbid.wireless.wlan00.hwmode":"11bgn"}, "cbip-wireless-wlan00-htbw");
+	</script>
+
+<div class="form-group" id="cbi-wireless-wlan00-channel"><label class="col-sm-4 control-label" for="cbid.wireless.wlan00.channel">Channel</label>
+		<div class="col-sm-5">
+
+
+	<select class="form-control" onchange="cbi_d_update(this.id)" id="cbid.wireless.wlan00.channel" name="cbid.wireless.wlan00.channel">
+	<option  id="cbi-wireless-wlan00-channel-0" value="0" selected="selected">Auto</option><option  id="cbi-wireless-wlan00-channel-1" value="1">1 (2412 MHz)</option><option  id="cbi-wireless-wlan00-channel-2" value="2">2 (2417 MHz)</option><option  id="cbi-wireless-wlan00-channel-3" value="3">3 (2422 MHz)</option><option  id="cbi-wireless-wlan00-channel-4" value="4">4 (2427 MHz)</option><option  id="cbi-wireless-wlan00-channel-5" value="5">5 (2432 MHz)</option><option  id="cbi-wireless-wlan00-channel-6" value="6">6 (2437 MHz)</option><option  id="cbi-wireless-wlan00-channel-7" value="7">7 (2442 MHz)</option><option  id="cbi-wireless-wlan00-channel-8" value="8">8 (2447 MHz)</option><option  id="cbi-wireless-wlan00-channel-9" value="9">9 (2452 MHz)</option><option  id="cbi-wireless-wlan00-channel-10" value="10">10 (2457 MHz)</option><option  id="cbi-wireless-wlan00-channel-11" value="11">11 (2462 MHz)</option><option  id="cbi-wireless-wlan00-channel-12" value="12">12 (2467 MHz)</option><option  id="cbi-wireless-wlan00-channel-13" value="13">13 (2472 MHz)</option>
+	</select>
+
+	</div>
+		</div>
+
+
+
+
+<div class="form-group" id="cbi-wireless-wlan00-txpower"><label class="col-sm-4 control-label" for="cbid.wireless.wlan00.txpower">Transmit Power</label>
+		<div class="col-sm-5">
+
+
+	<select class="form-control" onchange="cbi_d_update(this.id)" id="cbid.wireless.wlan00.txpower" name="cbid.wireless.wlan00.txpower">
+	<option  id="cbi-wireless-wlan00-txpower-100" value="100" selected="selected">Maximum</option><option  id="cbi-wireless-wlan00-txpower-20" value="20">Middle</option><option  id="cbi-wireless-wlan00-txpower-5" value="5">Minimum</option>
+	</select>
+
+	</div>
+		</div>
+
+
+
+
+<div class="form-group" id="cbi-wireless-wlan00-maxstanum"><label class="col-sm-4 control-label" for="cbid.wireless.wlan00.maxstanum">Max Stations</label>
+		<div class="col-sm-5">
+<input type="text"class="form-control uinteger"
+	 name="cbid.wireless.wlan00.maxstanum" id="cbid.wireless.wlan00.maxstanum" value="" range="[1,512]" /></div>
+	<div class="col-sm-3 hidden-xs">
+	<label class="form-control-static" for="cbid.wireless.wlan00.maxstanum"" style="white-space:nowrap;">(Optional)</label>	</div>
+		</div>
+
+
+
+
+
+			
+
+<!-- /nsection -->
+
+
+<div>
+<div class="form-group">
+		<div class="col-sm-offset-4 col-sm-5">
+		
+			<button class="btn btn-block btn-primary" type="submit" name="cbi.apply">Save & Apply</button>
+		
+			<button class="btn btn-block btn-primary hidden" type="button" disabled=true>Please Wait...</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$("[data-toggle='popover']").popover();
+		cbi_d_update();
+		cbi_init_message("Do you want to leave this page? Your changes may not be saved.");
+	</script>
+</form>

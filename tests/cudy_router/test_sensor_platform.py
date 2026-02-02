@@ -5,34 +5,41 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
 from custom_components.hass_cudy_router.const import *
-from custom_components.hass_cudy_router.models import get_spec
-from custom_components.hass_cudy_router.sensor import async_setup_entry
+from custom_components.hass_cudy_router.api import CudyApi
+from custom_components.hass_cudy_router.coordinator import CudyCoordinator
+from custom_components.hass_cudy_router.sensor import async_setup_entry as sensor_setup
+from tests.cudy_router.fixtures import html_exists, FakeClient
 
 
 @pytest.mark.asyncio
-async def test_sensor_setup_creates_entities(hass: HomeAssistant):
+@pytest.mark.parametrize("model", CUDY_DEVICES)
+async def test_sensor_platform(hass: HomeAssistant, model: str):
+    client = FakeClient(model)
+    api = CudyApi(client)
     entry = MagicMock(spec=ConfigEntry)
-    entry.entry_id = "123"
+    entry.entry_id = model
+    entry.data = {"host": "test.local"}
 
-    coordinator = MagicMock()
-    coordinator.data = {MODULE_SYSTEM: {SENSOR_SYSTEM_FIRMWARE_VERSION: "1.0.0"}}
-    coordinator.async_add_listener = MagicMock()
+    coordinator = CudyCoordinator(hass=hass, entry=entry, api=api, host="test.local")
 
-    spec = get_spec("WR6500")
+    data = await coordinator._async_update_data()
+    coordinator.data = data
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "coordinator": coordinator,
-        "spec": spec,
-    }
+    assert MODULE_SYSTEM in coordinator.data.keys()
+    assert coordinator.data[MODULE_SYSTEM][SENSOR_SYSTEM_FIRMWARE_VERSION] is not None
+
+    for module in SENSORS.keys():
+        if html_exists(model, module):
+            assert module in coordinator.data.keys()
+
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {"coordinator": coordinator}
 
     added = []
     def add_entities(entities):
         added.extend(entities)
 
-    await async_setup_entry(hass, entry, add_entities)
+    await sensor_setup(hass, entry, add_entities)
 
-    # At least one entity and firmware exists among them
-    assert len(added) > 0
-    fw = [e for e in added if e.entity_description.key == SENSOR_SYSTEM_FIRMWARE_VERSION]
-    assert fw
-    assert fw[0].native_value == "1.0.0"
+    fw_entities = [e for e in added if getattr(e, "unique_id", "").endswith(SENSOR_SYSTEM_FIRMWARE_VERSION)]
+    assert fw_entities
+    assert fw_entities[0].native_value == coordinator.data[MODULE_SYSTEM][SENSOR_SYSTEM_FIRMWARE_VERSION]

@@ -1,28 +1,39 @@
 from __future__ import annotations
 
+import logging
+
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
 from .client import CudyClient
 from .coordinator import CudyCoordinator
 from .api import CudyApi
-from .models import get_spec
+from .const import CUDY_DEVICES
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class CudyIntegration:
+    """Runtime integration instance.
+
+    This integration is model-aware but behavior is fully dynamic
+    (capabilities + parser driven).
+    """
+
     def __init__(
         self,
         hass: HomeAssistant,
         entry: ConfigEntry,
         client: CudyClient,
-        spec,
+        model: str,
     ) -> None:
         self.hass = hass
         self.entry = entry
         self.client = client
-        self.spec = spec
+        self.model = model
 
-        self.api = CudyApi(client, spec)
+        self.api = CudyApi(client)
+
         self.coordinator = CudyCoordinator(
             hass=hass,
             entry=entry,
@@ -40,8 +51,15 @@ async def create_model_integration(
     entry: ConfigEntry,
     client: CudyClient,
 ) -> CudyIntegration:
-    spec = get_spec(model)
+    if model not in CUDY_DEVICES:
+        _LOGGER.error("Unsupported or unknown Cudy model detected: %s", model)
+        raise ValueError(f"Unsupported Cudy model: {model}")
 
-    integration = CudyIntegration(hass, entry, client, spec)
+    integration = CudyIntegration(
+        hass=hass,
+        entry=entry,
+        client=client,
+        model=model,
+    )
     await integration.async_setup()
     return integration

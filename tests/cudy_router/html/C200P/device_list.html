@@ -1,0 +1,343 @@
+<form class="form-horizontal" role="form" method="post" name="cbi" action="/emulator/C200P/cgi-bin/luci/admin/network/devices/devlist?detail=1" enctype="multipart/form-data" onkeydown="if(event.keyCode==13){return false;}">
+	<div>
+		<input type="hidden" name="token" value="9695a60bcb28f643841df134a178171b" />
+		<input type="hidden" name="timeclock" value="" />
+		<input type="hidden" name="cbi.submit" value="1" />
+		<input type="password" class="sr-only">
+	</div>
+
+<div>
+	
+	<table id="DevicesTable" class="data-table"></table>
+<style>
+#DevicesTable.data-table td,
+#DevicesTable.data-table thead th .th-inner{white-space: normal;overflow-wrap:break-word;}
+</style>
+<script src="/emulator/C200P/luci-static/light/js/bootstrap-table.min.js?v=git-25.177.28215-06ef9be"></script>
+<script type="module">
+import { loadingFormatter,multiLinesFormatter,updateTable } from "/emulator/C200P/luci-static/light/js/bootstrap-table-expand.esm.js?v=git-25.177.28215-06ef9be";
+$(function(){
+	initDevicesTable();
+	function initDevicesTable(){
+        $('<link>', {
+            rel: 'stylesheet',
+            href: '/emulator/C200P/luci-static/light/css/bootstrap-table.min.css'
+        }).appendTo('head');
+
+        $('<link>', {
+            rel: 'stylesheet',
+            href: '/emulator/C200P/luci-static/light/css/apmanagement.css'
+        }).appendTo('head');
+
+		const dataUrl = `/emulator/C200P/cgi-bin/luci/admin/network/devices/all_devs`;
+
+		const $table = $("#DevicesTable");
+
+		const textCfg = {
+            "SearchNoMatch":"This section contains no values yet",
+			"Hostname":"Hostname",
+			"Address":"IP / MAC Address",
+			"RealTimeRate":"Real-time Rate",
+			"Duration":"Duration",
+            "Signal":"Signal",
+            "Internet":"Internet",
+            "Action":"Action",
+            "Interface":"Interface",
+            "VPN":"VPN",
+            "DomainFilter":"Domain Filter",
+			"getPageInfo": (pageFrom, pageTo, totalRows) => {
+				let str = `1 to 1 of 1 records`;
+				let index = 0;
+				let replaceStr = [pageFrom,pageTo,totalRows];
+				return str.replace(/1/g, () => replaceStr[index++]);
+			}
+		}
+
+        const pollTimeout = 20000;
+        const requestInterval = 5000;
+
+        let lastListRequestTime = 0;
+
+        let stopListPolling = null;
+
+        let isRouterMode = false,vpnEnable = false,filterRule = false;
+
+        const pollTableData = (delay = requestInterval,table,url,processData = null)=>{
+            let isPolling = true;
+            let lastRequestTime = 0;
+            function get_table_data() {
+                if (!isPolling || !table.is(':visible')) return;
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    timeout: pollTimeout,
+                    beforeSend:()=>{
+                        lastRequestTime = Date.now();
+                    },
+                    success: function(data) {
+                        const processedData = processData ? processData(data) : data;
+                        updateTable(table,processedData)
+                    },
+                    complete: function() {
+                        const requestDuration = Date.now() - lastRequestTime;
+                        const delay = requestDuration > requestInterval ? 0 : requestInterval;
+                        if (isPolling) {
+                            setTimeout(get_table_data, delay);
+                        }
+                    }
+                })
+            }
+
+            setTimeout(get_table_data, delay);
+
+            return function stop() {
+                isPolling = false;
+            };
+
+        }
+
+        $('.nav.nav-pills>li>a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            const $parent = $(e.target).closest("li");
+            const target = $(e.target).attr("href");
+            if ($parent.hasClass('active') && (target === "#tab-status-2")) {
+                stopListPolling?.();
+                stopListPolling = pollTableData(0,$table,dataUrl,processlistData);
+            } else {
+                stopListPolling?.();
+            }
+        });
+
+
+		const hostnameWithIfaceFormatter = (value, row) => {
+			return value + "<br>" + (row?.iface || '');
+		}
+
+        const SignalFormatter = (value,row) => {
+            if (typeof value === 'number' &&!isNaN(value)) {
+                return value + "dBm";
+            }
+            return value;
+        }
+
+		const RealTimeRateFormatter = (value, row) => {
+			const upspeedHtml = '<i class="fa fa-long-arrow-up" aria-hidden="true"></i> ' + value;
+			const downspeedHtml = '<i class="fa fa-long-arrow-down" aria-hidden="true"></i> ' + (row?.downspeed || '');
+			return upspeedHtml + "<br>" + downspeedHtml;
+		}
+
+
+        const createFlagFormatter = (inputName, buildTargetStr, isControlDisabled = () => false) => {
+            return (value, row) => {
+                const { idx } = row;
+                const targetStr = buildTargetStr(value, row).replace(/'/g, "%27");
+                const toggleClass = (value === "1") ? 'fa-toggle-on' : 'fa-toggle-off';
+
+                const isDisabled = isControlDisabled(row);
+                const toggleIcon = isDisabled
+                    ? `<i class="fa  ${toggleClass} fa-2x text-primary text-muted"></i>`
+                    : `<i class="fa  ${toggleClass} fa-2x text-primary" onclick="cbi_switch_toggle(this, true, '${targetStr}');"></i>`;
+
+                return `
+                <span class="action-btns">
+                <input type="hidden" value="1" name="cbi.cbe.table.1.${inputName}">
+                <input type="hidden" id="cbid.table.${idx}.${inputName}" name="cbid.table.1.${inputName}" value="${value}">
+                ${toggleIcon}
+                <i class="fa fa-spinner fa-2x fa-pulse text-primary hidden"></i>
+                </span>
+                `;
+            };
+        };
+
+        const InternetFormatter = createFlagFormatter('internet',
+                (value, row) => {
+                    const { mac, hostname, vpn, dnsfilter } = row;
+                    return `/emulator/C200P/cgi-bin/luci/admin/network/devices/internet?macaddr=${mac}&hostname=${encodeURIComponent(hostname)}&internet=${value}&vpn=${vpn}&dnsfilter=${dnsfilter}`;
+                });
+
+        const VpnFormatter = createFlagFormatter('vpn',
+            (value, row) => {
+                const { mac, hostname, vpn, dnsfilter } = row;
+                return `/emulator/C200P/cgi-bin/luci/admin/network/devices/vpn?macaddr=${mac}&hostname=${encodeURIComponent(hostname)}&internet=${value}&vpn=${vpn}&dnsfilter=${dnsfilter}`;
+            },(row) => row.local_ip === "0");
+
+        const DnsFilterFormatter = createFlagFormatter('dnsfilter',
+            (value, row) => {
+                const { mac, hostname, vpn, dnsfilter } = row;
+                return `/emulator/C200P/cgi-bin/luci/admin/network/devices/dnsfilter?macaddr=${mac}&hostname=${encodeURIComponent(hostname)}&internet=${value}&vpn=${vpn}&dnsfilter=${dnsfilter}`;
+            });
+
+
+        const buttonsFormatter = (value,row) => {
+            const {mac, hostname, vpn, internet,dnsfilter,idx,apid} = row;
+            
+            const targetStr = `macaddr=${mac}${apid?`&apid=${apid}`:""}`;
+
+            const iconHtml = isRouterMode?`<i class="fa fa-edit fa-lg" ></i>`:`<span class="fa-lg"><i class="icon icon-lookup"></i></span>`
+
+            return `
+                    <span class="action-btns">
+                    <button class="btn btn-link" type = "submit"
+                        onclick="cbi_show_modal(this, '/emulator/C200P/cgi-bin/luci/admin/network/devices/devinfo','${targetStr}');return false;"
+                        name="cbid.table.${row.idx}.devinfo"
+                        value=""
+                        data-action="modal">
+                        ${iconHtml}
+                    </button >
+                    </span>
+                    `
+        }
+
+        const processlistData = (data) => {
+            return data && data.dev_list ? data.dev_list : [];
+        };
+
+
+        const onPostBody = (table) => {
+            const options = table.bootstrapTable('getOptions');
+            const $pagination = table.closest('.fixed-table-container').next('.fixed-table-pagination');
+            (options.totalPages > 1) ? $pagination.show() : $pagination.hide();
+        }
+
+        const centeredColumnSet = new Set(['internet', 'operate', 'vpn','dnsfilter']);
+
+        $table.bootstrapTable({
+            url: dataUrl,
+            ajaxOptions: {
+                timeout: pollTimeout,
+                beforeSend:()=>{
+                    lastListRequestTime = Date.now();
+                },
+                complete:(xhr,status)=>{
+                    const requestDuration = Date.now() - lastListRequestTime;
+                    const delay = requestDuration > requestInterval ? 0 : requestInterval;
+                    stopListPolling = pollTableData(delay,$table,dataUrl,processlistData)
+                }
+            },
+            classes: 'table table-borderless table-hover',
+			pagination: true,
+			pageSize:10,
+			paginationParts:["pageInfo","pageList"],
+			paginationDetail: true,
+			formatShowingRows:function(pageFrom, pageTo, totalRows){
+				return textCfg["getPageInfo"](pageFrom, pageTo, totalRows);
+			},
+            formatNoMatches: () => textCfg["SearchNoMatch"],
+			loadingTemplate:loadingFormatter,
+            onPostBody:(data,e)=>{
+                onPostBody(e.$el)
+            },
+            responseHandler: (res)=>{
+                try {
+                    if (typeof res === 'object' && res!== null) {
+                        const rows = Array.isArray(res.dev_list)? res.dev_list : [];
+                        isRouterMode = res.dev_type === "router";
+                        vpnEnable = res.vpn_enable === "1";
+                        filterRule = res.filter_rule === "1";
+
+                        if (isRouterMode) {
+                            $table.bootstrapTable('showColumn', 'internet');
+                            $table.bootstrapTable('showColumn', 'hostname');
+                            filterRule && $table.bootstrapTable('showColumn', 'dnsfilter');
+                            vpnEnable && $table.bootstrapTable('showColumn', 'vpn');
+                        }else{
+                            $table.bootstrapTable('showColumn', 'iface');
+                            $table.find('th[data-field="ipaddr"]').css('width', 'auto');
+                        }
+
+                        return {
+                            rows
+                        };
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+                return {
+                    rows: []
+                };
+            },
+            headerStyle: (column) => {
+                if (centeredColumnSet.has(column.field)) {
+                    return { css: { 'text-align': 'center' } };
+                }
+                return {};
+            },
+            columns: [
+                {
+                    title: "No.",
+                    field: 'idx',
+                    width:50,
+                },
+				{
+					title: textCfg["Hostname"],
+					field: 'hostname',
+					formatter: hostnameWithIfaceFormatter,
+                    visible: false
+				},
+                {
+                    title: textCfg["Interface"],
+                    field: 'iface',
+                    visible: false
+                },
+				{
+					title: textCfg["Address"],
+					field: 'ipaddr',
+                    width:145,
+					formatter: multiLinesFormatter("mac")
+				},
+				{
+					title: textCfg["RealTimeRate"],
+					field: 'upspeed',
+                    width:114,
+                    class: 'hidden-xs',
+					formatter: RealTimeRateFormatter
+				},
+                {
+                    title: textCfg["Signal"],
+                    field: 'signal',
+                    width:70,
+                    class: 'hidden-xs',
+                    formatter: SignalFormatter
+                },
+				{
+					title: textCfg["Duration"],
+					field: 'online',
+                    class: 'hidden-xs',
+				},
+                {
+                    title: textCfg["Internet"],
+                    field: 'internet',
+                    formatter: InternetFormatter,
+                    visible: false
+                },
+                {
+                    title: textCfg["VPN"],
+                    field: 'vpn',
+                    formatter: VpnFormatter,
+                    visible: false
+                },
+                {
+                    title: textCfg["DomainFilter"],
+                    field: 'dnsfilter',
+                    formatter: DnsFilterFormatter,
+                    visible: false
+                },
+                {
+                    field: 'operate',
+                    title: textCfg["Action"],
+                    formatter: buttonsFormatter
+                },
+			]
+		});
+
+	}
+});
+</script>
+
+</div>
+</div>
+	<script type="text/javascript">
+		$("[data-toggle='popover']").popover();
+		cbi_d_update();
+		cbi_init_message("Do you want to leave this page? Your changes may not be saved.");
+	</script>
+</form>
