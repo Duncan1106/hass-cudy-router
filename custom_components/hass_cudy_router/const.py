@@ -19,6 +19,7 @@ MODULE_WIRELESS_5G = "wifi_5g"
 MODULE_WIRELESS_6G = "wifi_6g"
 MODULE_DHCP = "dhcp"
 MODULE_GSM = "gsm"
+MODULE_GSM_STATISTICS = "statistics"
 MODULE_SMS = "sms"
 MODULE_VPN = "vpn"
 MODULE_USB = "usb"
@@ -720,6 +721,9 @@ CAPABILITY_URLS = {
     ],
     MODULE_GSM: [
         "/admin/network/gcom/status?detail=1&iface=4g",
+    ],
+    MODULE_GSM_STATISTICS: [
+        "/admin/network/gcom/statistics?iface=4g",
     ],
     MODULE_SMS: [
         "/admin/network/gcom/sms/status?iface=4g&detail=1",
