@@ -633,6 +633,7 @@ CUDY_DEVICES = [
     "LT500",
     "LT500-Outdoor",
     "LT500E",
+    "LT700",
     "LT700-Outdoor",
     "LT700E",
     "LT700V",
