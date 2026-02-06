@@ -719,10 +719,10 @@ CAPABILITY_URLS = {
         "/admin/network/wireless/status?detail=1&iface=wlan20",
     ],
     MODULE_GSM: [
-        "/admin/network/gcom/iface/4g/status?detail=1",
+        "/admin/network/gcom/status?detail=1&iface=4g",
     ],
     MODULE_SMS: [
-        "/admin/network/gcom/sms/iface/4g/status?detail=1",
+        "/admin/network/gcom/sms/status?iface=4g&detail=1",
     ],
     MODULE_USB: [
         "/admin/services/usb/status?detail=1",
